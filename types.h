@@ -1,14 +1,19 @@
+#include <stdarg.h>
+#include <stdlib.h>
+#include "log.h"
+
 #ifndef TYPES_H
 #define TYPES_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+typedef enum type_t {
+    VARIABLE, CONSTANT, WILDCARD, CONSTRUCTOR, TUPLE
+} Type;
+typedef char * Symbol;
 
 typedef struct ast_t {
-    char *symbol;
+    Symbol symbol;
     int length;
-    struct ast_t *chilren;
+    struct ast_t *children;
 } AST;
 
 typedef struct rule_t {
@@ -21,14 +26,14 @@ typedef struct rules_t {
     Rule *rules;
 } Rules;
 
+// need to take advantage of stack frames for environments and stores; when evaluating premises we may have to backtrack and frames (or a journal) will let us jump back
+
 typedef struct map_t {
-    
 } Map;
 
 
-#ifdef __cplusplus
-}
-#endif
+AST *constr(Symbol symbol, int numChildren, ...);
+int destr(AST *ast);
 
 #endif /* TYPES_H */
 

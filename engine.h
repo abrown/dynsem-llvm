@@ -1,17 +1,13 @@
+#include <stdio.h>
+#include <stdarg.h>
+#include <string.h>
 #include "types.h"
+#include "log.h"
 
 #ifndef ENGINE_H
 #define ENGINE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 void execute(Rules *rules, AST *ast);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* ENGINE_H */
 
