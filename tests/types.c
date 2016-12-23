@@ -16,13 +16,12 @@ void test_build_single_tree() {
 
 void test_build_complex_tree() {
     AST *a = constr("A", 2, constr("B", 0), constr("C", 0));
-    assert(strncmp("B", a->children[0].symbol, 10) == 0);
-    assert(strncmp("C", a->children[1].symbol, 10) == 0);
-    assert(0 == a->children[0].length);
+    assert(strncmp("B", a->children[0]->symbol, 10) == 0);
+    assert(strncmp("C", a->children[1]->symbol, 10) == 0);
+    assert(0 == a->children[0]->length);
     
     destr(a);
     assert(a->length == 0);
-    assert(a->children == NULL);
 }
 
 int main(int argc, char** argv) {

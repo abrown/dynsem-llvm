@@ -2,6 +2,7 @@
 
 AST *constr(Symbol symbol, int numChildren, ...) {
     trace("constr: %s, %d children", symbol, numChildren);
+    
     AST *ast = malloc(sizeof (AST));
     ast->symbol = symbol;
     ast->length = numChildren;
@@ -12,7 +13,7 @@ AST *constr(Symbol symbol, int numChildren, ...) {
         va_start(arg, numChildren);
         ast->children = malloc(numChildren * sizeof (AST*));
         for (int i = 0; i < numChildren; i++) {
-            AST c = va_arg(arg, AST);
+            AST *c = va_arg(arg, AST*);
             ast->children[i] = c;
         }
         va_end(arg);
@@ -26,15 +27,15 @@ int destr(AST *ast) {
 
     if (ast->length > 0) {
         for (int i = 0; i < ast->length; i++) {
-            destr(&ast->children[i]);
+            destr(ast->children[i]);
         }
     }
 
     ast->length = 0;
     ast->symbol = NULL;
     trace("AST: %02x", ast);
-    //free(ast->children);
-    //free(ast);
+    free(ast->children);
+    free(ast);
 
     return 0;
 }

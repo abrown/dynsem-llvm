@@ -13,7 +13,7 @@ typedef char * Symbol;
 typedef struct ast_t {
     Symbol symbol;
     int length;
-    struct ast_t *children;
+    struct ast_t **children;
 } AST;
 
 typedef struct rule_t {
