@@ -9,13 +9,12 @@ int symbol_matches(const Symbol a, const Symbol b) {
 
 int matches(const AST *instance, const AST *pattern) {
     trace("matches");
-    if (symbol_matches(instance->symbol, pattern->symbol) == 0) {
-        if (pattern->length != instance->length) return 0;
-        for (int i = 0; i < pattern->length; i++) {
-            if (matches(&instance->children[i], &pattern->children[i]) == 0) return 0;
-        }
+    if (!symbol_matches(instance->symbol, pattern->symbol) == 0) return 0;
+    if (pattern->length != instance->length) return 0;
+    for (int i = 0; i < pattern->length; i++) {
+        if (!matches(instance->children[i], pattern->children[i])) return 0;
     }
-    return 0;
+    return 1;
 }
 
 //
