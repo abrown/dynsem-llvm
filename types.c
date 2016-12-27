@@ -1,41 +1,41 @@
 #include "types.h"
 
-AST *constr(Symbol symbol, int numChildren, ...) {
+Constructor *constr(Symbol symbol, int numChildren, ...) {
     trace("constr: %s, %d children", symbol, numChildren);
-    
-    AST *ast = malloc(sizeof (AST));
-    ast->symbol = symbol;
-    ast->length = numChildren;
-    ast->children = NULL;
+
+    Constructor *constr = malloc(sizeof (Constructor));
+    constr->symbol = symbol;
+    constr->length = numChildren;
+    constr->children = NULL;
 
     if (numChildren > 0) {
         va_list arg;
         va_start(arg, numChildren);
-        ast->children = malloc(numChildren * sizeof (AST*));
+        constr->children = malloc(numChildren * sizeof (AST*));
         for (int i = 0; i < numChildren; i++) {
             AST *c = va_arg(arg, AST*);
-            ast->children[i] = c;
+            constr->children[i] = c;
         }
         va_end(arg);
     }
 
-    return ast;
+    return constr;
 }
 
-int destr(AST *ast) {
-    trace("destr: %s, %d children", ast->symbol, ast->length);
+int destr(Constructor *constr) {
+    trace("destr: %s, %d children", constr->symbol, constr->length);
 
-    if (ast->length > 0) {
-        for (int i = 0; i < ast->length; i++) {
-            destr(ast->children[i]);
+    // TODO need switch here
+    if (constr->length > 0) {
+        for (int i = 0; i < constr->length; i++) {
+            // destr(constr->children[i]);
         }
     }
 
-    ast->length = 0;
-    ast->symbol = NULL;
-    trace("AST: %02x", ast);
-    free(ast->children);
-    free(ast);
+    constr->length = 0;
+    constr->symbol = NULL;
+    free(constr->children);
+    free(constr);
 
     return 0;
 }

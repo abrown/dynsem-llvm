@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>assert.h</itemPath>
       <itemPath>engine.h</itemPath>
       <itemPath>log.h</itemPath>
       <itemPath>types.h</itemPath>
@@ -53,6 +54,8 @@
         </cTool>
       </compileType>
       <item path=".gitignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="engine.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -125,6 +128,8 @@
         </asmTool>
       </compileType>
       <item path=".gitignore" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="engine.c" ex="false" tool="0" flavor2="0">
       </item>

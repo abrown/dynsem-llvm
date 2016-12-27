@@ -9,10 +9,18 @@ int symbol_matches(const Symbol a, const Symbol b) {
 
 int matches(const AST *instance, const AST *pattern) {
     trace("matches");
-    if (!symbol_matches(instance->symbol, pattern->symbol) == 0) return 0;
-    if (pattern->length != instance->length) return 0;
-    for (int i = 0; i < pattern->length; i++) {
-        if (!matches(instance->children[i], pattern->children[i])) return 0;
+    if (pattern->type == VARIABLE && pattern->type != instance->type) return 0;
+    switch (instance->type) {
+        case CONSTRUCTOR:
+            if (!symbol_matches(instance->value.constructor.symbol, pattern->value.constructor.symbol) == 0) return 0;
+            if (pattern->value.constructor.length != instance->value.constructor.length) return 0;
+            for (int i = 0; i < pattern->value.constructor.length; i++) {
+                if (!matches(instance->value.constructor.children[i], pattern->value.constructor.children[i])) return 0;
+            }
+            break;
+        default:
+            break;
+
     }
     return 1;
 }

@@ -6,14 +6,46 @@
 #define TYPES_H
 
 typedef enum type_t {
-    VARIABLE, CONSTANT, WILDCARD, CONSTRUCTOR, TUPLE
+    CONSTANT, VARIABLE, WILDCARD, CONSTRUCTOR, TUPLE
 } Type;
+
+typedef struct ast_t AST;
+
 typedef char * Symbol;
 
-typedef struct ast_t {
+typedef struct constant_t {
+    int length;
+    char** value;
+} Constant;
+
+typedef struct variable_t {
+    Symbol symbol;
+} Variable;
+
+typedef struct wildcard_t {
+} Wildcard;
+
+typedef struct constructor_t {
     Symbol symbol;
     int length;
-    struct ast_t **children;
+    struct constructor_t **children;
+} Constructor;
+
+typedef struct tuple_t {
+    int length;
+    AST **children;
+} Tuple;
+
+typedef struct ast_t {
+    Type type;
+
+    union {
+        Constant constant;
+        Variable variable;
+        Wildcard wildcard;
+        Constructor constructor;
+        Tuple tuple;
+    } value;
 } AST;
 
 typedef struct rule_t {
@@ -32,8 +64,8 @@ typedef struct map_t {
 } Map;
 
 
-AST *constr(Symbol symbol, int numChildren, ...);
-int destr(AST *ast);
+Constructor *constr(Symbol symbol, int numChildren, ...);
+int destr(Constructor *constr);
 
 #endif /* TYPES_H */
 
