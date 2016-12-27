@@ -4,7 +4,7 @@ Experimental project to compile a DynSem interpreter using LLVM. Disclaimer: thi
 
 # Run
 
-The main application currently does nothing (e.g. `return 0`) but it can be build using `make` (uses Netbeans-generated Makefiles so they may hard to read). Tests (i.e. where the actual development is showcased) are run using `make test`; note that Netbeans auto-generates some interesting test output (e.g. `%%TEST_STARTED%% ...`) but the return codes should be sane.
+The main application currently does nothing (e.g. `return 0`) but it can be built using `make` (uses Netbeans-generated Makefiles so they may hard to read). Tests (i.e. where the actual development is showcased) are run using `make test`; note that Netbeans auto-generates some interesting test output (e.g. `%%TEST_STARTED%% ...`) but the return codes should be sane.
 
 # Questions
 
@@ -20,7 +20,7 @@ The main application currently does nothing (e.g. `return 0`) but it can be buil
 - Add premises to rules: this doesn't look too complicated from page 10 of the DSL paper but I am still unclear how/whether the semantic components can affect the ordering of the premises.
 - Add semantic components: I can find generally optimal implementations of maps/lists but they must be reversible--in a rule with three side-effect premises if the third premise fails, the interpreter must be able to "undo" the side-effects (are these the "frames" in the implementation?) 
 
-# Doc
+# Documentation
 
 - [Vergu et al: DynSem: A DSL for Dynamic Semantics Specification](http://swerl.tudelft.nl/twiki/pub/Main/TechnicalReports/TUD-SERG-2015-003.pdf)
 - [DynSem Implementation](https://github.com/metaborg/dynsem)
