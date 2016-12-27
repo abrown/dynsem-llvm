@@ -15,7 +15,7 @@ typedef char * Symbol;
 
 typedef struct constant_t {
     int length;
-    char** value;
+    char* value;
 } Constant;
 
 typedef struct variable_t {
@@ -47,6 +47,28 @@ typedef struct ast_t {
         Tuple tuple;
     } value;
 } AST;
+
+typedef struct pattern_t {
+    Type type;
+
+    union {
+        Constant constant;
+        Variable variable;
+        Wildcard wildcard;
+        Constructor constructor;
+        Tuple tuple;
+    } value;
+} Pattern;
+
+typedef struct term_t {
+    Type type;
+
+    union {
+        Constant constant;
+        Constructor constructor;
+        Tuple tuple;
+    } value;
+} Term;
 
 typedef struct rule_t {
     AST from;
