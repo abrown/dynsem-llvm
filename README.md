@@ -24,6 +24,7 @@ The main application currently does nothing (e.g. `return 0`) but it can be buil
 
 - [Vergu et al: DynSem: A DSL for Dynamic Semantics Specification](http://swerl.tudelft.nl/twiki/pub/Main/TechnicalReports/TUD-SERG-2015-003.pdf)
 - [DynSem Implementation](https://github.com/metaborg/dynsem)
+- [SIMPL Reference Language](https://github.com/MetaBorgCube/simpl)
 - [Tolmach: Notes on Patterns](doc/tolmach-pattern-notes.pdf)
 - [Maranget: Compiling Pattern Matching to Good Decision Trees](http://moscova.inria.fr/~maranget/papers/ml05e-maranget.pdf)
 - [Scott and Ramsey: When Do Match-Compilation Heuristics Matter?](https://pdfs.semanticscholar.org/b8d1/e3b73db3e6549334cc7c20da060516c3188a.pdf)
