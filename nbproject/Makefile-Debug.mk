@@ -80,22 +80,22 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm.exe: ${OBJECTFILES}
 ${OBJECTDIR}/engine.o: engine.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/engine.o engine.c
+	$(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/engine.o engine.c
 
 ${OBJECTDIR}/log.o: log.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/log.o log.c
+	$(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/log.o log.c
 
 ${OBJECTDIR}/main.o: main.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.c
+	$(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main.o main.c
 
 ${OBJECTDIR}/types.o: types.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -g -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/types.o types.c
+	$(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/types.o types.c
 
 # Subprojects
 .build-subprojects:
@@ -116,13 +116,13 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/types.o ${OBJECTFILES:%.o=%_nomain.o}
 ${TESTDIR}/tests/engine.o: tests/engine.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.c) -g -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/engine.o tests/engine.c
+	$(COMPILE.c) -g -I../llvm-3.9.1/include -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/engine.o tests/engine.c
 
 
 ${TESTDIR}/tests/types.o: tests/types.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.c) -g -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/types.o tests/types.c
+	$(COMPILE.c) -g -I../llvm-3.9.1/include -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/types.o tests/types.c
 
 
 ${OBJECTDIR}/engine_nomain.o: ${OBJECTDIR}/engine.o engine.c 
@@ -133,7 +133,7 @@ ${OBJECTDIR}/engine_nomain.o: ${OBJECTDIR}/engine.o engine.c
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/engine_nomain.o engine.c;\
+	    $(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/engine_nomain.o engine.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/engine.o ${OBJECTDIR}/engine_nomain.o;\
 	fi
@@ -146,7 +146,7 @@ ${OBJECTDIR}/log_nomain.o: ${OBJECTDIR}/log.o log.c
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/log_nomain.o log.c;\
+	    $(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/log_nomain.o log.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/log.o ${OBJECTDIR}/log_nomain.o;\
 	fi
@@ -159,7 +159,7 @@ ${OBJECTDIR}/main_nomain.o: ${OBJECTDIR}/main.o main.c
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.c;\
+	    $(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/main_nomain.o main.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/main.o ${OBJECTDIR}/main_nomain.o;\
 	fi
@@ -172,7 +172,7 @@ ${OBJECTDIR}/types_nomain.o: ${OBJECTDIR}/types.o types.c
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/types_nomain.o types.c;\
+	    $(COMPILE.c) -g -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/types_nomain.o types.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/types.o ${OBJECTDIR}/types_nomain.o;\
 	fi
