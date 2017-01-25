@@ -1,8 +1,24 @@
-inotifywait -q -m -e close_write dynsem.ll |
-while read -r filename event; do
-  echo "Change detected"
+#!/bin/bash
+
+compile () {
+  echo "Compiling"
   llc dynsem.ll
   clang dynsem.s -o dynsem
-  echo "Running..."
+}
+
+run () {
+  echo "Running"
   ./dynsem
-done
+}
+
+if [ type inotifywait >/dev/null 2>&1 ]; then
+  inotifywait -q -m -e close_write dynsem.ll |
+  while read -r filename event; do
+    echo "Change detected"
+    compile
+    run
+  done
+else 
+  compile
+  run
+fi
