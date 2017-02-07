@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     printf("%%TEST_STARTED%% test_constant_match (engine)\n");
     test_constant_match();
     printf("%%TEST_FINISHED%% time=0 test_constant_match (engine) \n");
-
+    
     printf("%%SUITE_FINISHED%% time=0\n");
 
     return (EXIT_SUCCESS);

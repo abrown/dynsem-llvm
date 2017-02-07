@@ -15,10 +15,12 @@ void test_build_single_tree() {
 }
 
 void test_build_complex_tree() {
-    Constructor *a = constr("A", 2, constr("B", 0), constr("C", 0));
-    assert(strncmp("B", a->children[0]->symbol, 10) == 0);
-    assert(strncmp("C", a->children[1]->symbol, 10) == 0);
-    assert(0 == a->children[0]->length);
+    AST b = { .type = CONSTRUCTOR, .value.constructor = { "B", 0, NULL } };
+    AST c = { .type = CONSTRUCTOR, .value.constructor = { "C", 0, NULL } };
+    Constructor *a = constr("A", 2, &b, &c);
+    assert(strncmp("B", a->children[0]->value.constructor.symbol, 10) == 0);
+    assert(strncmp("C", a->children[1]->value.constructor.symbol, 10) == 0);
+    assert(0 == a->children[0]->value.constructor.length);
     
     destr(a);
     assert(a->length == 0);

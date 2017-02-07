@@ -20,7 +20,7 @@ int matches(const AST *instance, const AST *pattern) {
             }
             break;
         case CONSTANT:
-            if(instance->value.constant.length != pattern->value.constant.length) return 0;
+            if (instance->value.constant.length != pattern->value.constant.length) return 0;
             return !strncmp(instance->value.constant.value, pattern->value.constant.value, instance->value.constant.length); // TODO optimize
             break;
         case TUPLE:
@@ -32,9 +32,8 @@ int matches(const AST *instance, const AST *pattern) {
         case VARIABLE:
         case WILDCARD:
         default:
-            // error
+            log_and_exit(1, "matches: AST of unknown type: %d", instance->type);
             break;
-
     }
     return 1;
 }
@@ -56,11 +55,40 @@ int pair_symbols(const Rule *match, const AST *ast, Map *symbols) {
     return 0;
 }
 
-// rebuild the ast with symbols replaced 
-// we must clone the 'to' part of the rule, right?
-
-void construct(const Rule *match, const Map *symbols, AST *constructed) {
-
+/**
+ * Clone an AST into a separate memory location (i.e. to); assumes that 
+ * constants, variables, and wildcards are immutable and will not be freed
+ * during the execution of the program.
+ * @param from the address to clone from
+ * @param to the address to clone to
+ */
+void clone(const AST *from, AST *to) {
+    to->type = from->type;
+    switch (from->type) {
+        case CONSTANT:
+        case VARIABLE:
+        case WILDCARD:
+            to->value = from->value;
+            break;
+        case CONSTRUCTOR:
+            to->value.constructor.symbol = from->value.constructor.symbol;
+            to->value.constructor.length = from->value.constructor.length;
+            AST** children = malloc(from->value.constructor.length * sizeof (AST*));
+            for (int i = 0; i < from->value.constructor.length; i++) {
+                clone(from->value.constructor.children[i], children[i]);
+            }
+            break;
+        case TUPLE:
+            to->value.tuple.length = from->value.tuple.length;
+            AST** tuple_children = malloc(from->value.tuple.length * sizeof (AST*));
+            for (int i = 0; i < from->value.tuple.length; i++) {
+                clone(from->value.tuple.children[i], tuple_children[i]);
+            }
+            break;
+        default:
+            log_and_exit(1, "clone: AST of unknown type: %d", from->type);
+            break;
+    }
 }
 
 // attempt to rewrite ast using rules; if no match is found, rewrite children recursively and retry
@@ -75,6 +103,6 @@ void execute(Rules *rules, AST *ast) {
         Map symbols;
         pair_symbols(match, ast, &symbols);
         AST constructed;
-        construct(match, &symbols, &constructed);
+        // construct(match, &symbols, &constructed);
     }
 }

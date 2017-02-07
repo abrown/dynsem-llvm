@@ -28,7 +28,7 @@ typedef struct wildcard_t {
 typedef struct constructor_t {
     Symbol symbol;
     int length;
-    struct constructor_t **children;
+    AST **children;
 } Constructor;
 
 typedef struct tuple_t {
