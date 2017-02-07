@@ -42,17 +42,42 @@ entry:
 
 define %types.ast* @clone(%types.ast* %source) {
   entry:
-    ; memcpy here? recursively?
+    %new = call i64* @malloc(i64 9)
+    %dest = bitcast i64* %new to %types.ast*
 
-    %source.type = getelementptr %types.ast* %source, i64 0, i8 0
-    %type = load i8 %source.type
-    ;switch i8 %type, label %error [
-    ;  i8 %enum.symbol, label %symbol,
-    ;  i8 %enum.constant, label %constant,
-    ;
-    ;]
+    %source.type = getelementptr %types.ast* %source, i64 0, i32 0
+    %type = load i8* %source.type
+    switch i8 %type, label %error [
+      i8 0, label %symbol_constant_wildcard
+      i8 1, label %symbol_constant_wildcard
+      i8 3, label %symbol_constant_wildcard
+      i8 4, label %constructor
+      i8 2, label %variable
+      i8 5, label %tuple
+    ]
 
-  ret %types.ast* null
+    symbol_constant_wildcard:
+      ; do nothing, assume these are immutable and kept in some constant pool
+      %source.i8 = bitcast %types.ast* %source to i8*
+      %dest.i8 = bitcast %types.ast* %dest to i8*
+      call void %llvm.memcpy.p0i8.p0i8.i32(i8* %dest.i8, i8* %source.i8, i32 9, i32 0, i1 0);
+      br label %return
+
+    variable:
+      br label %return
+
+    constructor:
+      br label %return
+
+    tuple:
+      br label %return
+
+    error:
+      ; some log here
+      ret %types.ast* null
+
+    return:
+      ret %types.ast* %dest
 }
 
 define %types.ast* @replace(%types.ast* %source.rule, %types.ast* %source.runtime, %types.ast* %dest.runtime) {
@@ -78,12 +103,12 @@ entry:
     br label %checkeq
 
     checkeq:
-    ;Check if %mid = %k, if so, return
+    ;Check if %mid = %k, if so, %return
     %equal = icmp eq i32 %midv, %k
     br i1 %equal, label %return, label %checkn
 
     checkn:
-    ;Check if %n = 1, if so that means there is nowhere left to search return -1
+    ;Check if %n = 1, if so that means there is nowhere left to search %return -1
     %nis1 = icmp eq i32 %n, 1
     br i1 %nis1, label %return, label %checkgtlt
 
@@ -107,7 +132,7 @@ entry:
 
     ;The next few labels could probably be condensed, but it's a little easier to handle this way
     gtcheck:
-    ;If the recursive call returns -1, go to gtno, else go to gtyes
+    ;If the recursive call %returns -1, go to gtno, else go to gtyes
     %gcheck = icmp eq i32 %gcall, -1
     br i1 %gcheck, label %gtno, label %gtyes
 

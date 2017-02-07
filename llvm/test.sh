@@ -1,14 +1,15 @@
 #!/bin/bash
 
+file=$1
 compile () {
   echo "Compiling"
-  llc dynsem.ll
-  clang dynsem.s -o dynsem
+  llc "$file.ll"
+  clang "$file.s" -o $file
 }
 
 run () {
   echo "Running"
-  ./dynsem
+  ./$file
 }
 
 if [ type inotifywait >/dev/null 2>&1 ]; then
