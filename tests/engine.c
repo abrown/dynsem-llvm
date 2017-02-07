@@ -33,19 +33,18 @@ void test_constant_match() {
     assert(!matches(&a, &b));
 }
 
+void test_constant_clone() {
+    
+}
+
 int main(int argc, char** argv) {
     printf("%%SUITE_STARTING%% engine\n");
     printf("%%SUITE_STARTED%%\n");
 
-    printf("%%TEST_STARTED%% test_match (engine)\n");
-    test_constructor_match();
-    printf("%%TEST_FINISHED%% time=0 test_match (engine) \n");
-    
-    printf("%%TEST_STARTED%% test_constant_match (engine)\n");
-    test_constant_match();
-    printf("%%TEST_FINISHED%% time=0 test_constant_match (engine) \n");
-    
+    test(test_constructor_match);
+    test(test_constant_match);
+    test(test_constant_clone);
+   
     printf("%%SUITE_FINISHED%% time=0\n");
-
     return (EXIT_SUCCESS);
 }

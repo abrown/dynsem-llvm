@@ -30,14 +30,9 @@ int main(int argc, char** argv) {
     printf("%%SUITE_STARTING%% types\n");
     printf("%%SUITE_STARTED%%\n");
 
-    printf("%%TEST_STARTED%%  test_build_single_tree (types)\n");
-    test_build_single_tree();
-    printf("%%TEST_FINISHED%% time=0 test_build_single_tree (types)\n");
-
-    printf("%%TEST_STARTED%%  test_build_complex_tree (types)\n");
-    test_build_complex_tree();
-    printf("%%TEST_FINISHED%% time=0 test_build_complex_tree (types)\n");
-
+    test(test_build_single_tree);
+    test(test_build_complex_tree);
+    
     printf("%%SUITE_FINISHED%% time=0\n");
     return (EXIT_SUCCESS);
 }
