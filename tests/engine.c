@@ -34,7 +34,27 @@ void test_constant_match() {
 }
 
 void test_constant_clone() {
+    Constant a_ = {3, "ABC"};
+    AST a = {.type = CONSTANT, .value.constant = a_};
+    AST b;
     
+    clone(&a, &b);
+    assert(matches(&a, &b));
+    assert(&a != &b);
+}
+
+void test_constructor_clone() {
+    AST c = {.type = CONSTANT, .value.constant = {3, "ABC"}};
+    AST w = {.type = WILDCARD, .value.wildcard = {}};
+    AST *cs[2] = {&c, &w};
+    
+    AST a = {.type = CONSTRUCTOR, .value.constructor = {"A", 2, cs}};
+    AST b;
+    assert(a.value.constructor.children[0]->type == CONSTANT);
+    
+    clone(&a, &b);
+    assert(matches(&a, &b));
+    assert(&a != &b);
 }
 
 int main(int argc, char** argv) {
@@ -44,6 +64,7 @@ int main(int argc, char** argv) {
     test(test_constructor_match);
     test(test_constant_match);
     test(test_constant_clone);
+    test(test_constructor_clone);
    
     printf("%%SUITE_FINISHED%% time=0\n");
     return (EXIT_SUCCESS);

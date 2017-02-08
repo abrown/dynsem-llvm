@@ -63,6 +63,7 @@ int pair_symbols(const Rule *match, const AST *ast, Map *symbols) {
  * @param to the address to clone to
  */
 void clone(const AST *from, AST *to) {
+    trace("clone %d", from->type);
     to->type = from->type;
     switch (from->type) {
         case CONSTANT:
@@ -75,15 +76,19 @@ void clone(const AST *from, AST *to) {
             to->value.constructor.length = from->value.constructor.length;
             AST** children = malloc(from->value.constructor.length * sizeof (AST*));
             for (int i = 0; i < from->value.constructor.length; i++) {
+                children[i] = malloc(sizeof(AST));
                 clone(from->value.constructor.children[i], children[i]);
             }
+            to->value.constructor.children = children;
             break;
         case TUPLE:
             to->value.tuple.length = from->value.tuple.length;
             AST** tuple_children = malloc(from->value.tuple.length * sizeof (AST*));
             for (int i = 0; i < from->value.tuple.length; i++) {
+                children[i] = malloc(sizeof(AST));
                 clone(from->value.tuple.children[i], tuple_children[i]);
             }
+            to->value.tuple.children = tuple_children;
             break;
         default:
             log_and_exit(1, "clone: AST of unknown type: %d", from->type);

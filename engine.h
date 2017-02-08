@@ -9,6 +9,7 @@
 
 int matches(const AST *instance, const AST *pattern);
 void execute(Rules *rules, AST *ast);
+void clone(const AST *from, AST *to);
 
 #endif /* ENGINE_H */
 
