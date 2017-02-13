@@ -9,7 +9,7 @@ typedef enum type_t {
     CONSTANT, VARIABLE, WILDCARD, CONSTRUCTOR, TUPLE
 } Type;
 
-typedef struct ast_t AST;
+typedef struct ast_t Term;
 
 typedef char * Symbol;
 
@@ -28,12 +28,12 @@ typedef struct wildcard_t {
 typedef struct constructor_t {
     Symbol symbol;
     int length;
-    AST **children;
+    Term **children;
 } Constructor;
 
 typedef struct tuple_t {
     int length;
-    AST **children;
+    Term **children;
 } Tuple;
 
 typedef struct ast_t {
@@ -46,7 +46,7 @@ typedef struct ast_t {
         Constructor constructor;
         Tuple tuple;
     } value;
-} AST;
+} Term;
 
 typedef struct pattern_t {
     Type type;
@@ -60,19 +60,9 @@ typedef struct pattern_t {
     } value;
 } Pattern;
 
-typedef struct term_t {
-    Type type;
-
-    union {
-        Constant constant;
-        Constructor constructor;
-        Tuple tuple;
-    } value;
-} Term;
-
 typedef struct rule_t {
-    AST from;
-    AST to;
+    Term from;
+    Term to;
 } Rule;
 
 typedef struct rules_t {

@@ -7,7 +7,7 @@ int symbol_matches(const Symbol a, const Symbol b) {
     return strncmp(a, b, 1024);
 }
 
-int matches(const AST *instance, const AST *pattern) {
+int matches(const Term *instance, const Term *pattern) {
     trace("matches");
     if (pattern->type == WILDCARD || pattern->type == VARIABLE) return 1;
     if (pattern->type != instance->type) return 0;
@@ -38,9 +38,7 @@ int matches(const AST *instance, const AST *pattern) {
     return 1;
 }
 
-//
-
-const Rule *find_match(const AST *ast, const Rules *rules) {
+const Rule *find_match(const Term *ast, const Rules *rules) {
     trace("find match");
     for (int i = 0; i < rules->length; i++) {
         if (matches(ast, &rules->rules[i].from)) {
@@ -51,7 +49,7 @@ const Rule *find_match(const AST *ast, const Rules *rules) {
     return 0;
 }
 
-int pair_symbols(const Rule *match, const AST *ast, Map *symbols) {
+int pair_symbols(const Rule *match, const Term *ast, Map *symbols) {
     return 0;
 }
 
@@ -62,7 +60,7 @@ int pair_symbols(const Rule *match, const AST *ast, Map *symbols) {
  * @param from the address to clone from
  * @param to the address to clone to
  */
-void clone(const AST *from, AST *to) {
+void clone(const Term *from, Term *to) {
     trace("clone %d", from->type);
     to->type = from->type;
     switch (from->type) {
@@ -74,18 +72,18 @@ void clone(const AST *from, AST *to) {
         case CONSTRUCTOR:
             to->value.constructor.symbol = from->value.constructor.symbol;
             to->value.constructor.length = from->value.constructor.length;
-            AST** children = malloc(from->value.constructor.length * sizeof (AST*));
+            Term** children = malloc(from->value.constructor.length * sizeof (Term*));
             for (int i = 0; i < from->value.constructor.length; i++) {
-                children[i] = malloc(sizeof(AST));
+                children[i] = malloc(sizeof(Term));
                 clone(from->value.constructor.children[i], children[i]);
             }
             to->value.constructor.children = children;
             break;
         case TUPLE:
             to->value.tuple.length = from->value.tuple.length;
-            AST** tuple_children = malloc(from->value.tuple.length * sizeof (AST*));
+            Term** tuple_children = malloc(from->value.tuple.length * sizeof (Term*));
             for (int i = 0; i < from->value.tuple.length; i++) {
-                children[i] = malloc(sizeof(AST));
+                children[i] = malloc(sizeof(Term));
                 clone(from->value.tuple.children[i], tuple_children[i]);
             }
             to->value.tuple.children = tuple_children;
@@ -99,7 +97,7 @@ void clone(const AST *from, AST *to) {
 // attempt to rewrite ast using rules; if no match is found, rewrite children recursively and retry
 // if we don't do the double match above then we are limited to applicative-order evaluation (vs normal order evaluation, p.567)
 
-void execute(Rules *rules, AST *ast) {
+void execute(Rules *rules, Term *ast) {
     trace("execute");
     const Rule *match = find_match(ast, rules);
     if (match == 0) {
@@ -107,7 +105,7 @@ void execute(Rules *rules, AST *ast) {
     } else {
         Map symbols;
         pair_symbols(match, ast, &symbols);
-        AST constructed;
+        Term constructed;
         // construct(match, &symbols, &constructed);
     }
 }

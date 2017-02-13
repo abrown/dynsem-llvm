@@ -11,9 +11,9 @@ Constructor *constr(Symbol symbol, int numChildren, ...) {
     if (numChildren > 0) {
         va_list arg;
         va_start(arg, numChildren);
-        constr->children = malloc(numChildren * sizeof (AST*));
+        constr->children = malloc(numChildren * sizeof (Term*));
         for (int i = 0; i < numChildren; i++) {
-            AST *c = va_arg(arg, AST*);
+            Term *c = va_arg(arg, Term*);
             constr->children[i] = c;
         }
         va_end(arg);

@@ -7,9 +7,9 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
-int matches(const AST *instance, const AST *pattern);
-void execute(Rules *rules, AST *ast);
-void clone(const AST *from, AST *to);
+int matches(const Term *instance, const Term *pattern);
+void execute(Rules *rules, Term *ast);
+void clone(const Term *from, Term *to);
 
 #endif /* ENGINE_H */
 
