@@ -5,10 +5,10 @@
 
 void test_constructor_match() {
     Constructor a_ = {.symbol = "A", .length = 0};
-    Term a = {.type = CONSTRUCTOR, .value.constructor = a_};
+    Term a = {.tag = CONSTRUCTOR, .value.constructor = a_};
     assert(matches(&a, &a));
 
-    Term b = {.type = CONSTRUCTOR, .value.constructor = (Constructor)
+    Term b = {.tag = CONSTRUCTOR, .value.constructor = (Constructor)
         { .symbol = "B", .length = 0}};
     assert(!matches(&a, &b));
 
@@ -25,17 +25,17 @@ void test_constructor_match() {
 
 void test_constant_match() {
     Constant a_ = {3, "ABC"};
-    Term a = {.type = CONSTANT, .value.constant = a_};
+    Term a = {.tag = CONSTANT, .value.constant = a_};
     assert(matches(&a, &a));
 
-    Term b = {.type = CONSTANT, .value.constant = (Constant)
+    Term b = {.tag = CONSTANT, .value.constant = (Constant)
         { 3, "DEF"}};
     assert(!matches(&a, &b));
 }
 
 void test_constant_clone() {
     Constant a_ = {3, "ABC"};
-    Term a = {.type = CONSTANT, .value.constant = a_};
+    Term a = {.tag = CONSTANT, .value.constant = a_};
     Term b;
     
     clone(&a, &b);
@@ -44,13 +44,13 @@ void test_constant_clone() {
 }
 
 void test_constructor_clone() {
-    Term c = {.type = CONSTANT, .value.constant = {3, "ABC"}};
-    Term w = {.type = WILDCARD, .value.wildcard = {}};
+    Term c = {.tag = CONSTANT, .value.constant = {3, "ABC"}};
+    Term w = {.tag = WILDCARD, .value.wildcard = {}};
     Term *cs[2] = {&c, &w};
     
-    Term a = {.type = CONSTRUCTOR, .value.constructor = {"A", 2, cs}};
+    Term a = {.tag = CONSTRUCTOR, .value.constructor = {"A", 2, cs}};
     Term b;
-    assert(a.value.constructor.children[0]->type == CONSTANT);
+    assert(a.value.constructor.children[0]->tag == CONSTANT);
     
     clone(&a, &b);
     assert(matches(&a, &b));

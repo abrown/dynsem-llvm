@@ -9,9 +9,9 @@ int symbol_matches(const Symbol a, const Symbol b) {
 
 int matches(const Term *instance, const Term *pattern) {
     trace("matches");
-    if (pattern->type == WILDCARD || pattern->type == VARIABLE) return 1;
-    if (pattern->type != instance->type) return 0;
-    switch (instance->type) {
+    if (pattern->tag == WILDCARD || pattern->tag == VARIABLE) return 1;
+    if (pattern->tag != instance->tag) return 0;
+    switch (instance->tag) {
         case CONSTRUCTOR:
             if (!symbol_matches(instance->value.constructor.symbol, pattern->value.constructor.symbol) == 0) return 0;
             if (pattern->value.constructor.length != instance->value.constructor.length) return 0;
@@ -32,7 +32,7 @@ int matches(const Term *instance, const Term *pattern) {
         case VARIABLE:
         case WILDCARD:
         default:
-            log_and_exit(1, "matches: AST of unknown type: %d", instance->type);
+            log_and_exit(1, "matches: AST of unknown type: %d", instance->tag);
             break;
     }
     return 1;
@@ -61,9 +61,9 @@ int pair_symbols(const Rule *match, const Term *ast, Map *symbols) {
  * @param to the address to clone to
  */
 void clone(const Term *from, Term *to) {
-    trace("clone %d", from->type);
-    to->type = from->type;
-    switch (from->type) {
+    trace("clone %d", from->tag);
+    to->tag = from->tag;
+    switch (from->tag) {
         case CONSTANT:
         case VARIABLE:
         case WILDCARD:
@@ -89,7 +89,7 @@ void clone(const Term *from, Term *to) {
             to->value.tuple.children = tuple_children;
             break;
         default:
-            log_and_exit(1, "clone: AST of unknown type: %d", from->type);
+            log_and_exit(1, "clone: AST of unknown type: %d", from->tag);
             break;
     }
 }

@@ -7,7 +7,7 @@
 
 typedef enum type_t {
     CONSTANT, VARIABLE, WILDCARD, CONSTRUCTOR, TUPLE
-} Type;
+} Tag;
 
 typedef struct ast_t Term;
 
@@ -37,7 +37,7 @@ typedef struct tuple_t {
 } Tuple;
 
 typedef struct ast_t {
-    Type type;
+    Tag tag;
 
     union {
         Constant constant;
@@ -49,7 +49,7 @@ typedef struct ast_t {
 } Term;
 
 typedef struct pattern_t {
-    Type type;
+    Tag type;
 
     union {
         Constant constant;

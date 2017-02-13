@@ -15,8 +15,8 @@ void test_build_single_tree() {
 }
 
 void test_build_complex_tree() {
-    Term b = { .type = CONSTRUCTOR, .value.constructor = { "B", 0, NULL } };
-    Term c = { .type = CONSTRUCTOR, .value.constructor = { "C", 0, NULL } };
+    Term b = { .tag = CONSTRUCTOR, .value.constructor = { "B", 0, NULL } };
+    Term c = { .tag = CONSTRUCTOR, .value.constructor = { "C", 0, NULL } };
     Constructor *a = constr("A", 2, &b, &c);
     assert(strncmp("B", a->children[0]->value.constructor.symbol, 10) == 0);
     assert(strncmp("C", a->children[1]->value.constructor.symbol, 10) == 0);
