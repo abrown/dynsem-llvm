@@ -55,5 +55,12 @@ Term *constr(Tag tag, Symbol symbol, int numChildren, ...);
  */
 int destr(Term *constr);
 
+/**
+ * Determine the size of a term for allocation; helper method to hide variable array length
+ * @param term
+ * @return the size of the term
+ */
+size_t term_sizeof(Term *term);
+
 #endif /* TYPES_H */
 

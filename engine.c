@@ -65,7 +65,7 @@ void clone(const Term *from, Term *to) {
         case CONSTRUCTOR:
         case TUPLE:
             for (int i = 0; i < from->children_length; i++) {
-                to->children[i] = malloc(sizeof (Term));
+                to->children[i] = malloc(term_sizeof(from->children[i]));
                 clone(from->children[i], to->children[i]);
             }
             break;

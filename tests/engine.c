@@ -39,7 +39,7 @@ void test_constant_match() {
 
 void test_constant_clone() {
     Term *a = constr(CONSTANT, "ABC", 0);
-    Term *b = malloc(sizeof(Term));
+    Term *b = malloc(term_sizeof(a));
 
     clone(a, b);
     assert(matches(a, b));
@@ -51,7 +51,7 @@ void test_constant_clone() {
 
 void test_constructor_clone() {
     Term *a = constr(CONSTRUCTOR, "A", 2, constr(CONSTANT, "ABC", 0), constr(WILDCARD, NULL, 0));
-    Term *b = malloc(sizeof(Term) + a->children_length * sizeof(Term *));
+    Term *b = malloc(term_sizeof(a));
     assert(a->children[0]->tag == CONSTANT);
 
     clone(a, b);

@@ -1,5 +1,9 @@
 #include "types.h"
 
+size_t term_sizeof(Term *term){
+    return sizeof (Term) + term->children_length * sizeof(Term *);
+}
+
 Term *constr(Tag tag, Symbol symbol, int numChildren, ...) {
     trace("constr: %s, %d children", symbol, numChildren);
 
