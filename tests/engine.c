@@ -4,57 +4,62 @@
 #include "assert.h"
 
 void test_constructor_match() {
-    Constructor a_ = {.symbol = "A", .length = 0};
-    Term a = {.tag = CONSTRUCTOR, .value.constructor = a_};
-    assert(matches(&a, &a));
+    Term *a = constr(CONSTRUCTOR, "A", 0);
+    assert(matches(a, a));
 
-    Term b = {.tag = CONSTRUCTOR, .value.constructor = (Constructor)
-        { .symbol = "B", .length = 0}};
-    assert(!matches(&a, &b));
+    Term *b = constr(CONSTRUCTOR, "B", 0);
+    assert(!matches(a, b));
 
-
-    //    Constructor *a = constr("A", 0);
-    //    Constructor *a2 = constr("A", 0);
-    //    Constructor *b = constr("B", 0);
-    //    Constructor *c = constr("C", 2, a, b);
-    //    assert(matches(a, a2));
-    //    assert(!matches(a, b));
-    //    assert(matches(c, c));
-    //    assert(!matches(c, b));
+    Term *a2 = constr(CONSTRUCTOR, "A", 0);
+    assert(matches(a, a2));
+    
+    Term *c = constr(CONSTANT, "A", 0);
+    assert(!matches(a, c));
+    
+    Term *d = constr(CONSTRUCTOR, "A", 2, a, b);
+    assert(!matches(a, d));
+    
+    destr(a2);
+    destr(c);
+    destr(d);
 }
 
 void test_constant_match() {
-    Constant a_ = {3, "ABC"};
-    Term a = {.tag = CONSTANT, .value.constant = a_};
-    assert(matches(&a, &a));
-
-    Term b = {.tag = CONSTANT, .value.constant = (Constant)
-        { 3, "DEF"}};
-    assert(!matches(&a, &b));
+    Term *a = constr(CONSTANT, "ABC", 0);
+    assert(matches(a, a));
+    
+    Term *b = constr(CONSTANT, "DEF", 0);
+    assert(!matches(a, b));
+    
+    Term *c = constr(CONSTANT, "ABC", 1, b); // incorrect, but allowed by this permissive constr
+    assert(matches(a, c));
+    
+    destr(a);
 }
 
 void test_constant_clone() {
-    Constant a_ = {3, "ABC"};
-    Term a = {.tag = CONSTANT, .value.constant = a_};
-    Term b;
+    Term *a = constr(CONSTANT, "ABC", 0);
+    Term *b = malloc(sizeof(Term));
+
+    clone(a, b);
+    assert(matches(a, b));
+    assert(a != b);
     
-    clone(&a, &b);
-    assert(matches(&a, &b));
-    assert(&a != &b);
+    destr(a);
+    destr(b);
 }
 
 void test_constructor_clone() {
-    Term c = {.tag = CONSTANT, .value.constant = {3, "ABC"}};
-    Term w = {.tag = WILDCARD, .value.wildcard = {}};
-    Term *cs[2] = {&c, &w};
+    Term *a = constr(CONSTRUCTOR, "A", 2, constr(CONSTANT, "ABC", 0), constr(WILDCARD, NULL, 0));
+    Term *b = malloc(sizeof(Term) + a->children_length * sizeof(Term *));
+    assert(a->children[0]->tag == CONSTANT);
+
+    clone(a, b);
+    assert(matches(a, b));
+    assert(a != b);
     
-    Term a = {.tag = CONSTRUCTOR, .value.constructor = {"A", 2, cs}};
-    Term b;
-    assert(a.value.constructor.children[0]->tag == CONSTANT);
-    
-    clone(&a, &b);
-    assert(matches(&a, &b));
-    assert(&a != &b);
+    destr(a);
+    destr(b);
 }
 
 int main(int argc, char** argv) {
@@ -65,7 +70,7 @@ int main(int argc, char** argv) {
     test(test_constant_match);
     test(test_constant_clone);
     test(test_constructor_clone);
-   
+
     printf("%%SUITE_FINISHED%% time=0\n");
     return (EXIT_SUCCESS);
 }

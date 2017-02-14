@@ -1,41 +1,37 @@
 #include "types.h"
 
-Constructor *constr(Symbol symbol, int numChildren, ...) {
+Term *constr(Tag tag, Symbol symbol, int numChildren, ...) {
     trace("constr: %s, %d children", symbol, numChildren);
 
-    Constructor *constr = malloc(sizeof (Constructor));
-    constr->symbol = symbol;
-    constr->length = numChildren;
-    constr->children = NULL;
-
+    Term *created = malloc(sizeof (Term) + numChildren * sizeof(Term *));
+    created->tag = tag;
+    created->ref = NULL;
+    created->symbol = symbol;
+    created->symbol_length = symbol == NULL ? 0 : strnlen(symbol, 4096);
+    
+    created->children_length = numChildren;
     if (numChildren > 0) {
         va_list arg;
         va_start(arg, numChildren);
-        constr->children = malloc(numChildren * sizeof (Term*));
         for (int i = 0; i < numChildren; i++) {
             Term *c = va_arg(arg, Term*);
-            constr->children[i] = c;
+            created->children[i] = c;
         }
         va_end(arg);
     }
 
-    return constr;
+    return created;
 }
 
-int destr(Constructor *constr) {
-    trace("destr: %s, %d children", constr->symbol, constr->length);
+int destr(Term *term) {
+    trace("destr: %s, %d children", term->symbol, term->children_length);
 
-    // TODO need switch here
-    if (constr->length > 0) {
-        for (int i = 0; i < constr->length; i++) {
-            // destr(constr->children[i]);
-        }
+    for (int i = 0; i < term->children_length; i++) {
+        destr(term->children[i]);
     }
 
-    constr->length = 0;
-    constr->symbol = NULL;
-    free(constr->children);
-    free(constr);
+    memset(term, 0, sizeof (Term) + term->children_length * sizeof(Term *));
+    free(term);
 
     return 0;
 }

@@ -7,34 +7,27 @@ int symbol_matches(const Symbol a, const Symbol b) {
     return strncmp(a, b, 1024);
 }
 
+/**
+ * Match an instance of a term with a term pattern; TODO hash-consing (see aterms)
+ * @param instance a concrete term (no wildcards, variables)
+ * @param pattern a term that may contain wildcards, variables
+ * @return 1 if the items match, 0 otherwise
+ */
 int matches(const Term *instance, const Term *pattern) {
     trace("matches");
+
     if (pattern->tag == WILDCARD || pattern->tag == VARIABLE) return 1;
     if (pattern->tag != instance->tag) return 0;
-    switch (instance->tag) {
-        case CONSTRUCTOR:
-            if (!symbol_matches(instance->value.constructor.symbol, pattern->value.constructor.symbol) == 0) return 0;
-            if (pattern->value.constructor.length != instance->value.constructor.length) return 0;
-            for (int i = 0; i < pattern->value.constructor.length; i++) {
-                if (!matches(instance->value.constructor.children[i], pattern->value.constructor.children[i])) return 0;
-            }
-            break;
-        case CONSTANT:
-            if (instance->value.constant.length != pattern->value.constant.length) return 0;
-            return !strncmp(instance->value.constant.value, pattern->value.constant.value, instance->value.constant.length); // TODO optimize
-            break;
-        case TUPLE:
-            if (pattern->value.tuple.length != instance->value.tuple.length) return 0;
-            for (int i = 0; i < pattern->value.tuple.length; i++) {
-                if (!matches(instance->value.tuple.children[i], pattern->value.tuple.children[i])) return 0;
-            }
-            break;
-        case VARIABLE:
-        case WILDCARD:
-        default:
-            log_and_exit(1, "matches: AST of unknown type: %d", instance->tag);
-            break;
+
+    if (pattern->symbol != instance->symbol) return 0;
+    assert(pattern->symbol_length == instance->symbol_length);
+    if (instance->tag == CONSTANT) return 1;
+
+    if (pattern->children_length != instance->children_length) return 0;
+    for (int i = 0; i < pattern->children_length; i++) {
+        if (!matches(instance->children[i], pattern->children[i])) return 0;
     }
+
     return 1;
 }
 
@@ -62,31 +55,19 @@ int pair_symbols(const Rule *match, const Term *ast, Map *symbols) {
  */
 void clone(const Term *from, Term *to) {
     trace("clone %d", from->tag);
-    to->tag = from->tag;
+    memcpy(to, from, sizeof (Term) + from->children_length * sizeof (Term*));
     switch (from->tag) {
         case CONSTANT:
         case VARIABLE:
         case WILDCARD:
-            to->value = from->value;
+            // TODO do replacement here
             break;
         case CONSTRUCTOR:
-            to->value.constructor.symbol = from->value.constructor.symbol;
-            to->value.constructor.length = from->value.constructor.length;
-            Term** children = malloc(from->value.constructor.length * sizeof (Term*));
-            for (int i = 0; i < from->value.constructor.length; i++) {
-                children[i] = malloc(sizeof(Term));
-                clone(from->value.constructor.children[i], children[i]);
-            }
-            to->value.constructor.children = children;
-            break;
         case TUPLE:
-            to->value.tuple.length = from->value.tuple.length;
-            Term** tuple_children = malloc(from->value.tuple.length * sizeof (Term*));
-            for (int i = 0; i < from->value.tuple.length; i++) {
-                children[i] = malloc(sizeof(Term));
-                clone(from->value.tuple.children[i], tuple_children[i]);
+            for (int i = 0; i < from->children_length; i++) {
+                to->children[i] = malloc(sizeof (Term));
+                clone(from->children[i], to->children[i]);
             }
-            to->value.tuple.children = tuple_children;
             break;
         default:
             log_and_exit(1, "clone: AST of unknown type: %d", from->tag);

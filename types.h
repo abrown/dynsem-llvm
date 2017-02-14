@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
 #include "log.h"
 
 #ifndef TYPES_H
@@ -9,56 +10,18 @@ typedef enum type_t {
     CONSTANT, VARIABLE, WILDCARD, CONSTRUCTOR, TUPLE
 } Tag;
 
-typedef struct ast_t Term;
+typedef struct term_t Term;
 
 typedef char * Symbol;
 
-typedef struct constant_t {
-    int length;
-    char* value;
-} Constant;
-
-typedef struct variable_t {
-    Symbol symbol;
-} Variable;
-
-typedef struct wildcard_t {
-} Wildcard;
-
-typedef struct constructor_t {
-    Symbol symbol;
-    int length;
-    Term **children;
-} Constructor;
-
-typedef struct tuple_t {
-    int length;
-    Term **children;
-} Tuple;
-
-typedef struct ast_t {
+typedef struct term_t {
     Tag tag;
-
-    union {
-        Constant constant;
-        Variable variable;
-        Wildcard wildcard;
-        Constructor constructor;
-        Tuple tuple;
-    } value;
+    Term *ref;
+    int symbol_length;
+    Symbol symbol;
+    int children_length;
+    Term *children[];
 } Term;
-
-typedef struct pattern_t {
-    Tag type;
-
-    union {
-        Constant constant;
-        Variable variable;
-        Wildcard wildcard;
-        Constructor constructor;
-        Tuple tuple;
-    } value;
-} Pattern;
 
 typedef struct rule_t {
     Term from;
@@ -76,8 +39,21 @@ typedef struct map_t {
 } Map;
 
 
-Constructor *constr(Symbol symbol, int numChildren, ...);
-int destr(Constructor *constr);
+/**
+ * Helper function for creating a term
+ * @param symbol
+ * @param numChildren
+ * @param ...
+ * @return 
+ */
+Term *constr(Tag tag, Symbol symbol, int numChildren, ...);
+
+/**
+ * Helper function for destroying a term
+ * @param constr
+ * @return 
+ */
+int destr(Term *constr);
 
 #endif /* TYPES_H */
 

@@ -6,24 +6,25 @@
 
 
 void test_build_single_tree() {
-    Constructor *a = constr("A", 0);
-    assert(a->length == 0);
-    assert(a->children == NULL);
+    Term *a = constr(CONSTRUCTOR, "A", 0);
+    assert(a->children_length == 0);
+    // apparently this isn't true... assert(a->children == NULL);
 
     destr(a);
     assert(a->symbol == NULL);
 }
 
 void test_build_complex_tree() {
-    Term b = { .tag = CONSTRUCTOR, .value.constructor = { "B", 0, NULL } };
-    Term c = { .tag = CONSTRUCTOR, .value.constructor = { "C", 0, NULL } };
-    Constructor *a = constr("A", 2, &b, &c);
-    assert(strncmp("B", a->children[0]->value.constructor.symbol, 10) == 0);
-    assert(strncmp("C", a->children[1]->value.constructor.symbol, 10) == 0);
-    assert(0 == a->children[0]->value.constructor.length);
+    Term *b = constr(CONSTRUCTOR, "B", 0);
+    Term *c = constr(CONSTRUCTOR, "C", 0);
+    Term *a = constr(CONSTRUCTOR, "A", 2, b, c);
+    assert(strncmp("B", a->children[0]->symbol, 10) == 0);
+    assert(strncmp("C", a->children[1]->symbol, 10) == 0);
+    assert(0 == a->children[0]->children_length);
+    assert(0 == a->children[1]->children_length);
     
     destr(a);
-    assert(a->length == 0);
+    assert(a->children_length == 0);
 }
 
 int main(int argc, char** argv) {
