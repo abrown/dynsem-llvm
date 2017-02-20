@@ -126,3 +126,29 @@ include nbproject/Makefile-impl.mk
 
 # include project make variables
 include nbproject/Makefile-variables.mk
+
+
+
+# docker-specific
+docker:
+	docker build -t dynsem-llvm .
+
+docker-run:
+	# TODO map current directory to volume
+	docker run -d --privileged --network host -v /sys/fs/cgroup:/sys/fs/cgroup:ro dynsem-llvm:latest /lib/systemd/systemd
+
+docker-kill:
+	docker ps --filter 'ancestor=dynsem-llvm' | awk 'NR > 1 {print $$1}' | xargs --no-run-if-empty docker kill
+
+docker-clean: docker-kill
+	docker ps --filter 'ancestor=dynsem-llvm' -a | awk 'NR > 1 {print $$1}' | xargs --no-run-if-empty docker rm
+	
+docker-clean-image: docker-clean
+	docker images | grep "dynsem-llvm" | awk '{print $$3}' | xargs --no-run-if-empty docker rmi
+
+docker-clean-all: docker-clean
+	# remove all stopped containers
+	docker ps --filter "status=exited" | awk 'NR > 1 {print $$1}' | xargs --no-run-if-empty docker rm
+	# remove untagged images
+	docker images | grep "<none>" | awk '{print $$3}' | xargs --no-run-if-empty docker rmi
+	
