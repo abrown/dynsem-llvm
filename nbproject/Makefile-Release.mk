@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/src/engine.o \
 	${OBJECTDIR}/src/log.o \
 	${OBJECTDIR}/src/main.o \
+	${OBJECTDIR}/src/test_assert.o \
 	${OBJECTDIR}/src/types.o
 
 # Test Directory
@@ -91,6 +92,11 @@ ${OBJECTDIR}/src/main.o: src/main.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main.o src/main.c
+
+${OBJECTDIR}/src/test_assert.o: src/test_assert.c
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/test_assert.o src/test_assert.c
 
 ${OBJECTDIR}/src/types.o: src/types.c
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -162,6 +168,19 @@ ${OBJECTDIR}/src/main_nomain.o: ${OBJECTDIR}/src/main.o src/main.c
 	    $(COMPILE.c) -O2 -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/main_nomain.o src/main.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/src/main.o ${OBJECTDIR}/src/main_nomain.o;\
+	fi
+
+${OBJECTDIR}/src/test_assert_nomain.o: ${OBJECTDIR}/src/test_assert.o src/test_assert.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/test_assert.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.c) -O2 -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/test_assert_nomain.o src/test_assert.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/test_assert.o ${OBJECTDIR}/src/test_assert_nomain.o;\
 	fi
 
 ${OBJECTDIR}/src/types_nomain.o: ${OBJECTDIR}/src/types.o src/types.c 

@@ -4,9 +4,9 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>include/assert.h</itemPath>
       <itemPath>include/engine.h</itemPath>
       <itemPath>include/log.h</itemPath>
+      <itemPath>include/test_assert.h</itemPath>
       <itemPath>include/types.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -19,6 +19,7 @@
       <itemPath>src/engine.c</itemPath>
       <itemPath>src/log.c</itemPath>
       <itemPath>src/main.c</itemPath>
+      <itemPath>src/test_assert.c</itemPath>
       <itemPath>src/types.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -63,7 +64,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>Cygwin|Cygwin</compilerSet>
+        <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -108,11 +109,11 @@
           <output>${TESTDIR}/TestFiles/f2</output>
         </linkerTool>
       </folder>
-      <item path="include/assert.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/engine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/test_assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -121,6 +122,8 @@
       <item path="src/log.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/types.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -182,11 +185,11 @@
           <output>${TESTDIR}/TestFiles/f2</output>
         </linkerTool>
       </folder>
-      <item path="include/assert.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="include/engine.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/test_assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -195,6 +198,8 @@
       <item path="src/log.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/main.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/types.c" ex="false" tool="0" flavor2="0">
       </item>
