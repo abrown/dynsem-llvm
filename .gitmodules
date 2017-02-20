@@ -1,3 +1,6 @@
 [submodule "3rd/aterms"]
 	path = 3rd/aterms
 	url = git@github.com:cwi-swat/aterms.git
+[submodule "3rd/meta-environment"]
+	path = 3rd/meta-environment
+	url = git@github.com:cwi-swat/meta-environment.git
