@@ -1,0 +1,3 @@
+[submodule "3rd/aterms"]
+	path = 3rd/aterms
+	url = git@github.com:cwi-swat/aterms.git
