@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "types.h"
-#include "assert.h"
+#include "test_assert.h"
 
 
 void test_build_single_tree() {

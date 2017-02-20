@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#ifndef ASSERT_H
-#define ASSERT_H
+#ifndef TEST_ASSERT_H
+#define TEST_ASSERT_H
 
 // macro for asserting a condition: assert(2 == 2);
 void fail(const char *file, int line, const char *func, const char *expr) {
@@ -25,5 +25,4 @@ void _test(void (*test)(), const char *test_name, const char *module_name){
 }
 #define test(f) _test(f, #f, __FILE__)
 
-#endif /* ASSERT_H */
-
+#endif /* TEST_ASSERT_H */

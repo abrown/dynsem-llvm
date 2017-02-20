@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "engine.h"
-#include "assert.h"
+#include "test_assert.h"
 
 void test_constructor_match() {
     Term *a = constr(CONSTRUCTOR, "A", 0);
