@@ -1,66 +1,22 @@
-#include <stdarg.h>
-#include <stdlib.h>
-#include <string.h>
-#include "log.h"
+#include <aterm1.h> 
 
 #ifndef TYPES_H
 #define TYPES_H
 
-typedef enum type_t {
-    CONSTANT, VARIABLE, WILDCARD, CONSTRUCTOR, TUPLE
-} Tag;
-
-typedef struct term_t Term;
-
-typedef char * Symbol;
-
-typedef struct term_t {
-    Tag tag;
-    Term *ref;
-    int symbol_length;
-    Symbol symbol;
-    int children_length;
-    Term *children[];
-} Term;
-
 typedef struct rule_t {
-    Term from;
-    Term to;
+    ATerm from;
+    ATerm from_pattern;
+    ATerm to;
 } Rule;
 
-typedef struct rules_t {
+typedef struct rule_table_t {
     int length;
-    Rule *rules;
-} Rules;
+    Rule rules[];
+} RuleTable;
 
-// need to take advantage of stack frames for environments and stores; when evaluating premises we may have to backtrack and frames (or a journal) will let us jump back
-
-typedef struct map_t {
-} Map;
-
-
-/**
- * Helper function for creating a term
- * @param symbol
- * @param numChildren
- * @param ...
- * @return 
- */
-Term *constr(Tag tag, Symbol symbol, int numChildren, ...);
-
-/**
- * Helper function for destroying a term
- * @param constr
- * @return 
- */
-int destr(Term *constr);
-
-/**
- * Determine the size of a term for allocation; helper method to hide variable array length
- * @param term
- * @return the size of the term
- */
-size_t term_sizeof(Term *term);
+typedef enum return_code_t {
+    SUCCESS = 0, FAILURE
+} Result;
 
 #endif /* TYPES_H */
 

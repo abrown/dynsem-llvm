@@ -35,26 +35,21 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/src/engine.o \
+	${OBJECTDIR}/src/generate_aterms.o \
 	${OBJECTDIR}/src/log.o \
 	${OBJECTDIR}/src/main.o \
-	${OBJECTDIR}/src/test_assert.o \
-	${OBJECTDIR}/src/types.o
+	${OBJECTDIR}/src/test_assert.o
 
 # Test Directory
 TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
-	${TESTDIR}/TestFiles/f3 \
-	${TESTDIR}/TestFiles/f2 \
-	${TESTDIR}/TestFiles/f1
+	${TESTDIR}/TestFiles/f3
 
 # Test Object Files
 TESTOBJECTFILES= \
-	${TESTDIR}/src/tests/aterms.o \
-	${TESTDIR}/tests/engine.o \
-	${TESTDIR}/tests/types.o
+	${TESTDIR}/tests/aterms.o
 
 # C Compiler Flags
 CFLAGS=
@@ -80,10 +75,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/src/engine.o: src/engine.c
+${OBJECTDIR}/src/generate_aterms.o: src/generate_aterms.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/engine.o src/engine.c
+	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/generate_aterms.o src/generate_aterms.c
 
 ${OBJECTDIR}/src/log.o: src/log.c
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -100,11 +95,6 @@ ${OBJECTDIR}/src/test_assert.o: src/test_assert.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/test_assert.o src/test_assert.c
 
-${OBJECTDIR}/src/types.o: src/types.c
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/types.o src/types.c
-
 # Subprojects
 .build-subprojects:
 
@@ -112,48 +102,28 @@ ${OBJECTDIR}/src/types.o: src/types.c
 .build-tests-conf: .build-tests-subprojects .build-conf ${TESTFILES}
 .build-tests-subprojects:
 
-${TESTDIR}/TestFiles/f3: ${TESTDIR}/src/tests/aterms.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/aterms.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.c} -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS}   
 
-${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/engine.o ${OBJECTFILES:%.o=%_nomain.o}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.c} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS}   
 
-${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/types.o ${OBJECTFILES:%.o=%_nomain.o}
-	${MKDIR} -p ${TESTDIR}/TestFiles
-	${LINK.c} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS}   
-
-
-${TESTDIR}/src/tests/aterms.o: src/tests/aterms.c 
-	${MKDIR} -p ${TESTDIR}/src/tests
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/src/tests/aterms.o src/tests/aterms.c
-
-
-${TESTDIR}/tests/engine.o: tests/engine.c 
+${TESTDIR}/tests/aterms.o: tests/aterms.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/engine.o tests/engine.c
+	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/aterms.o tests/aterms.c
 
 
-${TESTDIR}/tests/types.o: tests/types.c 
-	${MKDIR} -p ${TESTDIR}/tests
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/types.o tests/types.c
-
-
-${OBJECTDIR}/src/engine_nomain.o: ${OBJECTDIR}/src/engine.o src/engine.c 
+${OBJECTDIR}/src/generate_aterms_nomain.o: ${OBJECTDIR}/src/generate_aterms.o src/generate_aterms.c 
 	${MKDIR} -p ${OBJECTDIR}/src
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/engine.o`; \
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/generate_aterms.o`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/engine_nomain.o src/engine.c;\
+	    $(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/generate_aterms_nomain.o src/generate_aterms.c;\
 	else  \
-	    ${CP} ${OBJECTDIR}/src/engine.o ${OBJECTDIR}/src/engine_nomain.o;\
+	    ${CP} ${OBJECTDIR}/src/generate_aterms.o ${OBJECTDIR}/src/generate_aterms_nomain.o;\
 	fi
 
 ${OBJECTDIR}/src/log_nomain.o: ${OBJECTDIR}/src/log.o src/log.c 
@@ -195,26 +165,11 @@ ${OBJECTDIR}/src/test_assert_nomain.o: ${OBJECTDIR}/src/test_assert.o src/test_a
 	    ${CP} ${OBJECTDIR}/src/test_assert.o ${OBJECTDIR}/src/test_assert_nomain.o;\
 	fi
 
-${OBJECTDIR}/src/types_nomain.o: ${OBJECTDIR}/src/types.o src/types.c 
-	${MKDIR} -p ${OBJECTDIR}/src
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/types.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/types_nomain.o src/types.c;\
-	else  \
-	    ${CP} ${OBJECTDIR}/src/types.o ${OBJECTDIR}/src/types_nomain.o;\
-	fi
-
 # Run Test Targets
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
 	    ${TESTDIR}/TestFiles/f3 || true; \
-	    ${TESTDIR}/TestFiles/f2 || true; \
-	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \
 	fi
