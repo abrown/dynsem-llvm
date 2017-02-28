@@ -80,6 +80,7 @@ void test_generate_variable_list() {
     ATermList vars = ATmakeList3(ATmake("a"), ATmake("b"), ATmake("c"));
 
     generate_variable_list(fd, ", ", vars);
+    fputc(0, fd); // to end the list string
     assert(strncmp(buffer, "a, b, c", 1024) == 0);
 
     fclose(fd);

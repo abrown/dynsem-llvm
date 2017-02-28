@@ -40,6 +40,7 @@ void generate_variable_list(FILE *stream, char *delimiter, ATermList vars) {
         vars = ATgetNext(vars);
         if (!ATisEmpty(vars)) fputs(delimiter, stream);
     }
+    fflush(stream);
 }
 
 ATerm replace_free_variables(ATerm rule) {
