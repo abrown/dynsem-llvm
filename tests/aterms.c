@@ -79,21 +79,9 @@ void test_generate_variable_list() {
     FILE* fd = open_memstream(&buffer, &buffer_size);
     ATermList vars = ATmakeList3(ATmake("a"), ATmake("b"), ATmake("c"));
 
-    generate_variable_list(fd, ", ", vars);
+    generate_variable_list(fd, vars, NULL, ", ", NULL);
     fputc(0, fd); // to end the list string
     assert(strncmp(buffer, "a, b, c", 1024) == 0);
-
-    fclose(fd);
-}
-
-void test_generate_free_variable_allocation() {
-    char *buffer;
-    size_t buffer_size;
-    FILE* fd = open_memstream(&buffer, &buffer_size);
-    ATerm a = ATmake("a(x, 1, z)");
-
-    generate_transform_allocation_with_aterm(fd, a);
-    assert(strncmp(buffer, "ATerm x, z;\n", 1024) == 0);
 
     fclose(fd);
 }
@@ -111,7 +99,6 @@ int main(int argc, char** argv) {
     test(test_find_free_variables);
     test(test_replace_free_variables);
     test(test_generate_variable_list);
-    test(test_generate_free_variable_allocation);
 
     printf("%%SUITE_FINISHED%% time=0\n");
     return (EXIT_SUCCESS);

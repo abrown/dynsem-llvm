@@ -7,30 +7,82 @@
 void generate_headers(FILE *stream) {
     fputs("#include <aterm1.h>\n", stream);
     fputs("#include <aterm2.h>\n", stream);
+    fputs("#include \"transform.h\"\n", stream);
+    fputs("\n", stream);
     fflush(stream);
 }
 
-void generate_transform_function(FILE *stream, Rule rule, int transform_id) {
-    fprintf(stream, "ATerm transform_%d(ATerm rule_from, ATerm rule_to, ATerm before) {", transform_id);
-    
+void generate_rule_table(FILE *stream, RuleTable *rules) {
+    fprintf(stream, "Rule rule_table[%d];\n", rules->length);
+    fputs("void build_rules() {\n", stream);
+
+    for (int i = 0; i < rules->length; i++) {
+        generate_rule_table_entry(stream, rules->rules[i]);
+    }
+
+    fputs("}\n", stream);
+    fflush(stream);
+}
+
+void generate_rule_table_entry(FILE *stream, Rule rule) {
+    fprintf(stream, "\t rule_table[%d].from = ATmake(\"", rule.id);
+    ATfprintf(stream, "%t", replace_free_variables(rule.from));
+    fputs("\");\n", stream);
+
+    fprintf(stream, "\t rule_table[%d].to = ATmake(\"", rule.id);
+    ATfprintf(stream, "%t", replace_free_variables(rule.to));
+    fputs("\");\n", stream);
+}
+
+void generate_find_function(FILE *stream, RuleTable *rules) {
+    fputs("ATerm match_and_transform(ATerm before) {\n", stream);
+
+    for (int i = 0; i < rules->length; i++) {
+        fputs("\t ", stream);
+        generate_find_case(stream, rules->rules[i]);
+        fputs("\n", stream);
+    }
+
+    fputs("\t return ATempty;\n", stream);
+    fputs("}\n", stream);
+    fflush(stream);
+}
+
+void generate_find_case(FILE *stream, Rule rule) {
+    fprintf(stream, "if(ATmatch(rule_table[%d].from_pattern, before)) return transform_%d(rule_table[%d].from_pattern, rule_table[%d].to_pattern, before);", rule.id, rule.id, rule.id, rule.id);
+    fflush(stream);
+}
+
+void generate_transform_functions(FILE *stream, RuleTable *rules) {
+    fputs("\n", stream);
+
+    for (int i = 0; i < rules->length; i++) {
+        generate_transform_function(stream, rules->rules[i]);
+        fputs("\n", stream);
+    }
+
+    fflush(stream);
+}
+
+void generate_transform_function(FILE *stream, Rule rule) {
+    fprintf(stream, "ATerm transform_%d(ATerm from, ATerm to, ATerm before) {\n", rule.id);
+
     // allocate from variables: ATerm a, b, c;
-    fputs("\t ATerm ", stream);
     ATermList from_vars = find_free_variables(rule.from, ATempty);
-    generate_variable_list(stream, ", ", from_vars);
-    fputs(";\n", stream);
-    
-    // fill in values: ATmatchTerm(before, rule_table[42].from_pattern, &a, &b, &c);
+    generate_variable_list(stream, from_vars, "\t ATerm ", ", ", ";\n");
+
+    // fill in values: ATmatchTerm(before, from, &a, &b, &c);
     // TODO need error check?
-    fprintf(stream, "\t ATmatchTerm(before, rule_table[%d].from_pattern", rule.id);
-    generate_variable_list(stream, ", &", from_vars); // TODO need prefix
+    fputs("\t ATmatchTerm(before, from", stream);
+    generate_variable_list(stream, from_vars, ", &", ", &", NULL); // TODO need prefix
     fputs(");\n", stream);
-    
-    // make after term from to rule: return ATmakeTerm(rule_table[42].to_pattern, a, c);
-    ATermList to_vars = find_free_variables(rule.from, ATempty);
-    fprintf(stream, "\t return ATmakeTerm(rule_table[%d].to_pattern", rule.id);
-    generate_variable_list(stream, ", ", to_vars);
+
+    // make after term from to rule: return ATmakeTerm(to, a, c);
+    ATermList to_vars = find_free_variables(rule.to, ATempty);
+    fputs("\t return ATmakeTerm(to", stream);
+    generate_variable_list(stream, to_vars, ", ", ", ", NULL);
     fputs(");\n", stream);
-    
+
     fputs("}\n", stream);
     fflush(stream);
 }
@@ -63,14 +115,17 @@ ATermList find_free_variables(ATerm term, ATermList collector) {
     return ATreverse(collector);
 }
 
-void generate_variable_list(FILE *stream, char *delimiter, ATermList vars) {
+void generate_variable_list(FILE *stream, ATermList vars, char *prefix, char *delimiter, char *suffix) {
     char *name;
+    ATbool vars_exist = !ATisEmpty(vars);
+    if (vars_exist && prefix != NULL) fputs(prefix, stream);
     while (!ATisEmpty(vars)) {
         name = ATgetName(ATgetAFun(ATgetFirst(vars)));
         fputs(name, stream);
         vars = ATgetNext(vars);
-        if (!ATisEmpty(vars)) fputs(delimiter, stream);
+        if (!ATisEmpty(vars) && delimiter != NULL) fputs(delimiter, stream);
     }
+    if (vars_exist && suffix != NULL) fputs(suffix, stream);
     fflush(stream);
 }
 
@@ -120,31 +175,3 @@ ATerm replace_free_variables(ATerm rule) {
     }
     return rule;
 }
-
-void generate_transform_allocation_with_aterm(FILE *stream, ATerm rule) {
-    fputs("ATerm ", stream);
-    ATermList vars = find_free_variables(rule, ATempty);
-    generate_variable_list(stream, ", ", vars);
-    fputs(";\n", stream);
-    fflush(stream);
-}
-
-//void stream_write_line(Stream stream, char *string);
-//
-//void generate_find_rule() {
-//    int num_rules = 1;
-//    Rule rule_table[num_rules];
-//    rule_table[0]->from = ATmake("a(x, y, z)");
-//    rule_table[0]->to = ATmake("b(y)");
-//
-//    stream_write_line(stream, "#include <aterm1.h>");
-//    stream_write_line(stream, "#include <aterm2.h>");
-//    stream_write_line(stream, "ATerm find(ATerm before) {");
-//    for (int i = 0; i < num_rules; i++) {
-//        stream_write_line(stream, "\t if(ATmatch(rule_table[" i "]->from_pattern, before)) return transform_" i "(rule_table[" i "], before);");
-//        //        rule_table[i]->from_pattern = replace_free_variables(rule_table[i]->from);
-//        //        write_free_variables(rule_table[0]->from);
-//    }
-//    stream_write_line(stream, "\t return error();");
-//    stream_write_line(stream, "}");
-//}

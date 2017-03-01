@@ -13,7 +13,7 @@ extern "C" {
 
     ATerm replace_free_variables(ATerm term);
     ATermList find_free_variables(ATerm term, ATermList start);
-    void generate_variable_list(FILE *stream, char *delimiter, ATermList vars);
+    void generate_variable_list(FILE *stream, ATermList vars, char *prefix, char *delimiter, char *suffix);
     void generate_transform_allocation_with_aterm(FILE *stream, ATerm rule); // TODO use rules
 
 #ifdef __cplusplus
