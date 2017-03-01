@@ -43,7 +43,7 @@ void generate_find_function(FILE *stream, RuleTable *rules) {
         fputs("\n", stream);
     }
 
-    fputs("\t return ATempty;\n", stream);
+    fputs("\t return NULL;\n", stream);
     fputs("}\n", stream);
     fflush(stream);
 }

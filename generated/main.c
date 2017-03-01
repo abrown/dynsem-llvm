@@ -5,7 +5,7 @@
 #include "transform.h"
 
 ATerm parse() {
-    return ATempty;
+    return ATmake("a(1, 2)");
 }
 
 ATbool is_finished(ATerm term) {
