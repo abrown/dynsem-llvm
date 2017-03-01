@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <aterm1.h>
 #include <aterm2.h>
-#include "rule.h"
 #include "transform.h"
 
 ATerm parse() {

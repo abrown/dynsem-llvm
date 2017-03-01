@@ -44,6 +44,7 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>.gitignore</itemPath>
+    <itemPath>generated/Makefile</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
@@ -88,6 +89,8 @@
           <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
+      <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/generate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/generate_aterms.h" ex="false" tool="3" flavor2="0">
@@ -147,6 +150,8 @@
           <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
+      <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/generate.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/generate_aterms.h" ex="false" tool="3" flavor2="0">

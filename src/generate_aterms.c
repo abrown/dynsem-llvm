@@ -49,7 +49,7 @@ void generate_find_function(FILE *stream, RuleTable *rules) {
 }
 
 void generate_find_case(FILE *stream, Rule rule) {
-    fprintf(stream, "if(ATmatch(rule_table[%d].from_pattern, before)) return transform_%d(rule_table[%d].from_pattern, rule_table[%d].to_pattern, before);", rule.id, rule.id, rule.id, rule.id);
+    fprintf(stream, "if(ATmatchTerm(rule_table[%d].from, before)) return transform_%d(rule_table[%d].from, rule_table[%d].to, before);", rule.id, rule.id, rule.id, rule.id);
     fflush(stream);
 }
 
