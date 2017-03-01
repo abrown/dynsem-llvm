@@ -4,6 +4,37 @@
 #include <aterm2.h>
 #include "log.h"
 
+void generate_headers(FILE *stream) {
+    fputs("#include <aterm1.h>\n", stream);
+    fputs("#include <aterm2.h>\n", stream);
+    fflush(stream);
+}
+
+void generate_transform_function(FILE *stream, Rule rule, int transform_id) {
+    fprintf(stream, "ATerm transform_%d(ATerm rule_from, ATerm rule_to, ATerm before) {", transform_id);
+    
+    // allocate from variables: ATerm a, b, c;
+    fputs("\t ATerm ", stream);
+    ATermList from_vars = find_free_variables(rule.from, ATempty);
+    generate_variable_list(stream, ", ", from_vars);
+    fputs(";\n", stream);
+    
+    // fill in values: ATmatchTerm(before, rule_table[42].from_pattern, &a, &b, &c);
+    // TODO need error check?
+    fprintf(stream, "\t ATmatchTerm(before, rule_table[%d].from_pattern", rule.id);
+    generate_variable_list(stream, ", &", from_vars); // TODO need prefix
+    fputs(");\n", stream);
+    
+    // make after term from to rule: return ATmakeTerm(rule_table[42].to_pattern, a, c);
+    ATermList to_vars = find_free_variables(rule.from, ATempty);
+    fprintf(stream, "\t return ATmakeTerm(rule_table[%d].to_pattern", rule.id);
+    generate_variable_list(stream, ", ", to_vars);
+    fputs(");\n", stream);
+    
+    fputs("}\n", stream);
+    fflush(stream);
+}
+
 ATermList find_free_variables(ATerm term, ATermList collector) {
     switch (ATgetType(term)) {
         case AT_APPL:
@@ -90,58 +121,12 @@ ATerm replace_free_variables(ATerm rule) {
     return rule;
 }
 
-static int level = 0;
-static int num_vars = 0;
-
 void generate_transform_allocation_with_aterm(FILE *stream, ATerm rule) {
-    if (level == 0) {
-        fputs("ATerm ", stream);
-        num_vars = 0;
-    }
-
-    switch (ATgetType(rule)) {
-        case AT_APPL:
-            trace("Found appl");
-            AFun fun = ATgetAFun((ATermAppl) rule);
-            int arity = ATgetArity(fun);
-            if (arity == 0) {
-                char *name = ATgetName(fun);
-                if (num_vars > 0) fputs(", ", stream);
-                fputs(name, stream);
-                num_vars++;
-            } else {
-                level++;
-                for (int i = 0; i < arity; i++) {
-                    ATerm arg = ATgetArgument(rule, i);
-                    generate_transform_allocation_with_aterm(stream, arg);
-                }
-                level--;
-            }
-            break;
-        case AT_LIST:
-            trace("Found list");
-            int length = ATgetLength((ATermList) rule);
-            level++;
-            for (int i = 0; i < length; i++) {
-                ATerm arg = ATelementAt((ATermList) rule, i);
-                generate_transform_allocation_with_aterm(stream, arg);
-            }
-            level--;
-            break;
-        case AT_INT:
-        case AT_REAL:
-        case AT_BLOB:
-        case AT_SYMBOL:
-        case AT_PLACEHOLDER:
-        case AT_FREE:
-        default:
-            break;
-    }
-
-    if (level == 0) {
-        fputs(";\n", stream);
-        fflush(stream);
-    }
+    fputs("ATerm ", stream);
+    ATermList vars = find_free_variables(rule, ATempty);
+    generate_variable_list(stream, ", ", vars);
+    fputs(";\n", stream);
+    fflush(stream);
 }
 
 //void stream_write_line(Stream stream, char *string);

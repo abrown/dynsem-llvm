@@ -14,8 +14,7 @@ extern "C" {
     void generate_find_function(FILE *stream, RuleTable rules);
     void generate_find_case(FILE *stream, Rule rule);
     void generate_transform_functions(FILE *stream, RuleTable rules);
-    void generate_transform_function(FILE *stream, Rule rule);
-    void generate_transform_allocation(FILE *stream, Rule rule);
+    void generate_transform_function(FILE *stream, Rule rule, int transform_id);
     void generate_transform_match(FILE *stream, Rule rule);
     void generate_transform_make(FILE *stream, Rule rule);
 

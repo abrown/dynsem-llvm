@@ -4,6 +4,7 @@
 #define TYPES_H
 
 typedef struct rule_t {
+    int id;
     ATerm from;
     ATerm from_pattern;
     ATerm to;
