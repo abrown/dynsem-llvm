@@ -16,6 +16,10 @@ void generate_rule_table(FILE *stream, RuleTable *rules) {
     fprintf(stream, "Rule rule_table[%d];\n", rules->length);
     fputs("void build_rules() {\n", stream);
 
+    // build placeholder
+    fputs("AFun term_symbol = ATmakeAFun(\"term\", 0, ATfalse);\n", stream);
+    fputs("ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term_symbol));\n", stream);
+
     for (int i = 0; i < rules->length; i++) {
         generate_rule_table_entry(stream, rules->rules[i]);
     }
@@ -49,7 +53,7 @@ void generate_find_function(FILE *stream, RuleTable *rules) {
 }
 
 void generate_find_case(FILE *stream, Rule rule) {
-    fprintf(stream, "if(ATmatchTerm(rule_table[%d].from, before)) return transform_%d(rule_table[%d].from, rule_table[%d].to, before);", rule.id, rule.id, rule.id, rule.id);
+    fprintf(stream, "if(ATmatchTerm(before, rule_table[%d].from)) return transform_%d(rule_table[%d].from, rule_table[%d].to, before);", rule.id, rule.id, rule.id, rule.id);
     fflush(stream);
 }
 
@@ -85,6 +89,38 @@ void generate_transform_function(FILE *stream, Rule rule) {
 
     fputs("}\n", stream);
     fflush(stream);
+}
+
+ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callback_data) {
+    switch (ATgetType(term)) {
+        case AT_APPL:
+            trace("appl");
+            AFun fun = ATgetAFun((ATermAppl) term);
+            int arity = ATgetArity(fun);
+            if (arity == 0) {
+                return callback(term, callback_data);
+            } else {
+                for (int i = 0; i < arity; i++) {
+                    ATerm old = ATgetArgument((ATermAppl) term, i);
+                    ATerm new = iterate_free_variables(old, callback, callback_data);
+                    if (new != NULL && old != new) term = (ATerm) ATsetArgument((ATermAppl) term, new, i);
+                }
+            }
+            break;
+        case AT_LIST:
+            trace("list");
+            int length = ATgetLength((ATermList) term);
+            for (int i = 0; i < length; i++) {
+                ATerm old = ATelementAt((ATermList) term, i);
+                ATerm new = iterate_free_variables(old, callback, callback_data);
+                if (new != NULL && old != new) term = (ATerm) ATreplace((ATermList) term, new, i);
+            }
+            break;
+        default:
+            // only lists and applications can contain 0-arity functions
+            break;
+    }
+    return term;
 }
 
 ATermList find_free_variables(ATerm term, ATermList collector) {

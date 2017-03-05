@@ -10,7 +10,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+    
+    typedef ATerm(*free_variables_cb)(ATerm current, void *data);
+    ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callback_data);
     ATerm replace_free_variables(ATerm term);
     ATermList find_free_variables(ATerm term, ATermList start);
     void generate_variable_list(FILE *stream, ATermList vars, char *prefix, char *delimiter, char *suffix);

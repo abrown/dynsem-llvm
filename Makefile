@@ -128,6 +128,12 @@ include nbproject/Makefile-impl.mk
 include nbproject/Makefile-variables.mk
 
 
+# generate
+generate: build
+	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm
+	make -C generated
+	generated/interpreter
+
 
 # docker-specific
 docker:

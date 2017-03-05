@@ -9,7 +9,7 @@ ATerm parse() {
 }
 
 ATbool is_finished(ATerm term) {
-    return ATfalse;
+    return term == NULL;
 }
 
 int main(int argc, char** argv) {
@@ -21,8 +21,8 @@ int main(int argc, char** argv) {
 
     int steps = 0;
     while (!is_finished(term)) {
+        ATprintf("#%d %t\n", steps++, term);
         term = match_and_transform(term);
-        ATprintf("#%d %t", steps++, term);
     }
 
     return EXIT_SUCCESS;
