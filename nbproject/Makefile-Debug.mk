@@ -36,7 +36,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/generate_aterms.o \
-	${OBJECTDIR}/src/log.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/test_assert.o
 
@@ -80,11 +79,6 @@ ${OBJECTDIR}/src/generate_aterms.o: src/generate_aterms.c
 	${RM} "$@.d"
 	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/generate_aterms.o src/generate_aterms.c
 
-${OBJECTDIR}/src/log.o: src/log.c
-	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/log.o src/log.c
-
 ${OBJECTDIR}/src/main.o: src/main.c
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
@@ -124,19 +118,6 @@ ${OBJECTDIR}/src/generate_aterms_nomain.o: ${OBJECTDIR}/src/generate_aterms.o sr
 	    $(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/generate_aterms_nomain.o src/generate_aterms.c;\
 	else  \
 	    ${CP} ${OBJECTDIR}/src/generate_aterms.o ${OBJECTDIR}/src/generate_aterms_nomain.o;\
-	fi
-
-${OBJECTDIR}/src/log_nomain.o: ${OBJECTDIR}/src/log.o src/log.c 
-	${MKDIR} -p ${OBJECTDIR}/src
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/log.o`; \
-	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
-	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
-	then  \
-	    ${RM} "$@.d";\
-	    $(COMPILE.c) -g -Iinclude -I../llvm-3.9.1/include -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/log_nomain.o src/log.c;\
-	else  \
-	    ${CP} ${OBJECTDIR}/src/log.o ${OBJECTDIR}/src/log_nomain.o;\
 	fi
 
 ${OBJECTDIR}/src/main_nomain.o: ${OBJECTDIR}/src/main.o src/main.c 

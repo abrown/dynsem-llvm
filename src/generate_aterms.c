@@ -2,7 +2,7 @@
 #include "generate_aterms.h"
 #include <aterm1.h>
 #include <aterm2.h>
-#include "log.h"
+#include "logging.h"
 
 void generate_headers(FILE *stream) {
     fputs("#include <aterm1.h>\n", stream);
@@ -99,8 +99,8 @@ ATermList find_matching_rule_args(ATerm from, ATerm to) {
         int index = 0;
         while (!ATisEmpty(_from_vars)) {
             AFun from_var = ATgetAFun(ATgetFirst(_from_vars));
-            printf("%s == %s\n", ATgetName(to_var), ATgetName(from_var));
             if (to_var == from_var) {
+                log_debug("found matching argument for %s in 'from' rule", ATgetName(to_var));
                 matches = ATinsert(matches, (ATerm) ATmakeInt(index));
                 break;
             }
@@ -190,10 +190,11 @@ void generate_variable_list(FILE *stream, ATermList vars, char *prefix, char *de
 ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callback_data) {
     switch (ATgetType(term)) {
         case AT_APPL:
-            trace("appl");
+            log_debug("iterating, found function application");
             AFun fun = ATgetAFun((ATermAppl) term);
             int arity = ATgetArity(fun);
             if (arity == 0) {
+                log_debug("iterating, found free variable: %s", ATgetName(fun));
                 return callback(term, callback_data);
             } else {
                 for (int i = 0; i < arity; i++) {
@@ -204,7 +205,7 @@ ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callb
             }
             break;
         case AT_LIST:
-            trace("list");
+            log_debug("iterating, found list");
             int length = ATgetLength((ATermList) term);
             for (int i = 0; i < length; i++) {
                 ATerm old = ATelementAt((ATermList) term, i);
