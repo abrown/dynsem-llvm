@@ -91,6 +91,20 @@ void generate_transform_function(FILE *stream, Rule rule) {
     fflush(stream);
 }
 
+void generate_variable_list(FILE *stream, ATermList vars, char *prefix, char *delimiter, char *suffix) {
+    char *name;
+    ATbool vars_exist = !ATisEmpty(vars);
+    if (vars_exist && prefix != NULL) fputs(prefix, stream);
+    while (!ATisEmpty(vars)) {
+        name = ATgetName(ATgetAFun(ATgetFirst(vars)));
+        fputs(name, stream);
+        vars = ATgetNext(vars);
+        if (!ATisEmpty(vars) && delimiter != NULL) fputs(delimiter, stream);
+    }
+    if (vars_exist && suffix != NULL) fputs(suffix, stream);
+    fflush(stream);
+}
+
 ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callback_data) {
     switch (ATgetType(term)) {
         case AT_APPL:
@@ -123,91 +137,24 @@ ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callb
     return term;
 }
 
-ATermList find_free_variables(ATerm term, ATermList collector) {
-    switch (ATgetType(term)) {
-        case AT_APPL:
-            trace("appl");
-            AFun fun = ATgetAFun((ATermAppl) term);
-            int arity = ATgetArity(fun);
-            if (arity == 0) {
-                return ATinsert(collector, term);
-            } else {
-                for (int i = 0; i < arity; i++) {
-                    collector = find_free_variables(ATgetArgument((ATermAppl) term, i), collector);
-                }
-            }
-            break;
-        case AT_LIST:
-            trace("list");
-            int length = ATgetLength((ATermList) term);
-            for (int i = 0; i < length; i++) {
-                collector = find_free_variables(ATelementAt((ATermList) term, i), collector);
-            }
-            break;
-        default:
-            // only lists and applications can contain 0-arity functions
-            break;
-    }
-    return ATreverse(collector);
+ATerm find_free_variables_callback(ATerm current, void *_collector) {
+    ATermList *collector = (ATermList *)_collector;
+    *collector = ATappend(*collector, current);
+    return NULL;
 }
 
-void generate_variable_list(FILE *stream, ATermList vars, char *prefix, char *delimiter, char *suffix) {
-    char *name;
-    ATbool vars_exist = !ATisEmpty(vars);
-    if (vars_exist && prefix != NULL) fputs(prefix, stream);
-    while (!ATisEmpty(vars)) {
-        name = ATgetName(ATgetAFun(ATgetFirst(vars)));
-        fputs(name, stream);
-        vars = ATgetNext(vars);
-        if (!ATisEmpty(vars) && delimiter != NULL) fputs(delimiter, stream);
-    }
-    if (vars_exist && suffix != NULL) fputs(suffix, stream);
-    fflush(stream);
+ATermList find_free_variables(ATerm term, ATermList collector) {
+    iterate_free_variables(term, find_free_variables_callback, &collector);
+    return collector;
+}
+
+ATerm replace_free_variables_callback(ATerm current, void *nothing) {
+    // generate and return "<term>"
+    AFun term = ATmakeAFun("term", 0, ATfalse);
+    ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term));
+    return (ATerm) term_placeholder;
 }
 
 ATerm replace_free_variables(ATerm rule) {
-    switch (ATgetType(rule)) {
-        case AT_APPL:
-            trace("appl");
-            AFun fun = ATgetAFun((ATermAppl) rule);
-            int arity = ATgetArity(fun);
-            if (arity == 0) {
-                // generate and return "<term>"
-                AFun term = ATmakeAFun("term", 0, ATfalse);
-                ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term));
-                return (ATerm) term_placeholder;
-            } else {
-                for (int i = 0; i < arity; i++) {
-                    ATerm arg = ATgetArgument(rule, i);
-                    ATerm new = replace_free_variables(arg);
-                    if (arg != new) rule = (ATerm) ATsetArgument((ATermAppl) rule, new, i);
-                }
-            }
-            break;
-        case AT_LIST:
-            trace("list");
-            int length = ATgetLength((ATermList) rule);
-            for (int i = 0; i < length; i++) {
-                ATerm arg = ATelementAt((ATermList) rule, i);
-                ATerm new = replace_free_variables(arg);
-                if (arg != new) rule = (ATerm) ATreplace((ATermList) rule, new, i);
-            }
-            break;
-        case AT_INT:
-        case AT_REAL:
-        case AT_BLOB:
-        case AT_SYMBOL:
-            return rule;
-            break;
-        case AT_PLACEHOLDER:
-            ATwarning("Found placeholder in rule, continuing: %t", rule); // TODO use logger
-            return rule;
-            break;
-        case AT_FREE:
-        default:
-            ATerror("Found unknown or unhandleable type: %t", rule); // TODO use logger
-            exit(1);
-            break;
-    }
-    return rule;
+    return iterate_free_variables(rule, replace_free_variables_callback, NULL);
 }
