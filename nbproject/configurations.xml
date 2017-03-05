@@ -4,7 +4,8 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <itemPath>include/engine.h</itemPath>
+      <itemPath>include/generate.h</itemPath>
+      <itemPath>include/generate_aterms.h</itemPath>
       <itemPath>include/log.h</itemPath>
       <itemPath>include/test_assert.h</itemPath>
       <itemPath>include/types.h</itemPath>
@@ -16,21 +17,17 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>src/engine.c</itemPath>
+      <itemPath>src/generate_aterms.c</itemPath>
       <itemPath>src/log.c</itemPath>
       <itemPath>src/main.c</itemPath>
       <itemPath>src/test_assert.c</itemPath>
-      <itemPath>src/types.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
                    projectFiles="false"
                    kind="TEST_LOGICAL_FOLDER">
-      <logicalFolder name="f2" displayName="engine" projectFiles="true" kind="TEST">
-        <itemPath>tests/engine.c</itemPath>
-      </logicalFolder>
-      <logicalFolder name="f1" displayName="types" projectFiles="true" kind="TEST">
-        <itemPath>tests/types.c</itemPath>
+      <logicalFolder name="f3" displayName="aterms" projectFiles="true" kind="TEST">
+        <itemPath>tests/aterms.c</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -38,15 +35,6 @@
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
-    </logicalFolder>
-    <logicalFolder name="TestFiles"
-                   displayName="Test Files"
-                   projectFiles="false"
-                   kind="TEST_LOGICAL_FOLDER">
-      <logicalFolder name="f2" displayName="engine" projectFiles="true" kind="TEST">
-      </logicalFolder>
-      <logicalFolder name="f1" displayName="types" projectFiles="true" kind="TEST">
-      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -56,6 +44,7 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>.gitignore</itemPath>
+    <itemPath>generated/Makefile</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
@@ -64,22 +53,28 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>CLang|CLang</compilerSet>
+        <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
           <standard>10</standard>
+          <commandlineTool>clang-5.0</commandlineTool>
           <incDir>
             <pElem>include</pElem>
             <pElem>../llvm-3.9.1/include</pElem>
           </incDir>
         </cTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibLibItem>ATerm</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
       </compileType>
       <item path=".gitignore" ex="false" tool="3" flavor2="0">
       </item>
-      <folder path="TestFiles/f1">
+      <folder path="TestFiles/f3">
         <cTool>
           <incDir>
             <pElem>.</pElem>
@@ -91,25 +86,14 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
+          <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
-      <folder path="TestFiles/f2">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f2</output>
-        </linkerTool>
-      </folder>
-      <item path="include/engine.h" ex="false" tool="3" flavor2="0">
+      <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/generate.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/generate_aterms.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/log.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -117,7 +101,7 @@
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/engine.c" ex="false" tool="0" flavor2="0">
+      <item path="src/generate_aterms.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/log.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -125,11 +109,7 @@
       </item>
       <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/types.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="tests/engine.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="tests/types.c" ex="false" tool="0" flavor2="0">
+      <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -155,7 +135,7 @@
       </compileType>
       <item path=".gitignore" ex="false" tool="3" flavor2="0">
       </item>
-      <folder path="TestFiles/f1">
+      <folder path="TestFiles/f3">
         <cTool>
           <incDir>
             <pElem>.</pElem>
@@ -167,25 +147,14 @@
           </incDir>
         </ccTool>
         <linkerTool>
-          <output>${TESTDIR}/TestFiles/f1</output>
+          <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
-      <folder path="TestFiles/f2">
-        <cTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </cTool>
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <output>${TESTDIR}/TestFiles/f2</output>
-        </linkerTool>
-      </folder>
-      <item path="include/engine.h" ex="false" tool="3" flavor2="0">
+      <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/generate.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/generate_aterms.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/log.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -193,7 +162,7 @@
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="src/engine.c" ex="false" tool="0" flavor2="0">
+      <item path="src/generate_aterms.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/log.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -201,11 +170,7 @@
       </item>
       <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/types.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="tests/engine.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="tests/types.c" ex="false" tool="0" flavor2="0">
+      <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
   </confs>
