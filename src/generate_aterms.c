@@ -4,32 +4,35 @@
 #include <aterm2.h>
 #include "logging.h"
 
+#define TAB "    "
+#define NEWLINE "\n"
+
 void generate_headers(FILE *stream) {
-    fputs("#include <aterm1.h>\n", stream);
-    fputs("#include <aterm2.h>\n", stream);
-    fputs("#include \"transform.h\"\n", stream);
-    fputs("\n", stream);
+    fputs("#include <aterm1.h>" NEWLINE, stream);
+    fputs("#include <aterm2.h>" NEWLINE, stream);
+    fputs("#include \"transform.h\"" NEWLINE, stream);
+    fputs(NEWLINE, stream);
     fflush(stream);
 }
 
 void generate_rule_table(FILE *stream, RuleTable *rules) {
-    fprintf(stream, "Rule rule_table[%d];\n", rules->length);
-    fputs("void build_rules() {\n", stream);
+    fprintf(stream, "Rule rule_table[%d];" NEWLINE, rules->length);
+    fputs("void build_rules() {" NEWLINE, stream);
 
     // build placeholder
-    fputs("\t AFun term_symbol = ATmakeAFun(\"term\", 0, ATfalse);\n", stream);
-    fputs("\t ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term_symbol));\n", stream);
+    fputs(TAB "AFun term_symbol = ATmakeAFun(\"term\", 0, ATfalse);" NEWLINE, stream);
+    fputs(TAB "ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term_symbol));" NEWLINE, stream);
 
     for (int i = 0; i < rules->length; i++) {
         generate_rule_table_entry(stream, rules->rules[i]);
     }
 
-    fputs("}\n\n", stream);
+    fputs("}" NEWLINE NEWLINE, stream);
     fflush(stream);
 }
 
 void generate_rule_table_entry(FILE *stream, Rule rule) {
-    fprintf(stream, "\t rule_table[%d].from = ATmake(\"", rule.id);
+    fprintf(stream, TAB "rule_table[%d].from = ATmake(\"", rule.id);
     ATfprintf(stream, "%t", replace_free_variables(rule.from));
     fputs("\"", stream);
 
@@ -39,9 +42,9 @@ void generate_rule_table_entry(FILE *stream, Rule rule) {
         fputs("term_placeholder", stream);
         if (i < num_vars) fputs(", ", stream);
     }
-    fputs(");\n", stream);
+    fputs(");" NEWLINE, stream);
 
-    fprintf(stream, "\t rule_table[%d].to = ATmake(\"", rule.id);
+    fprintf(stream, TAB "rule_table[%d].to = ATmake(\"", rule.id);
     ATfprintf(stream, "%t", replace_free_variables(rule.to));
     fputs("\"", stream);
 
@@ -52,7 +55,7 @@ void generate_rule_table_entry(FILE *stream, Rule rule) {
         if (i < num_vars) fputs(", ", stream);
     }
 
-    fputs(");\n", stream);
+    fputs(");" NEWLINE, stream);
 }
 
 int find_max_rule_args(RuleTable *rules) {
@@ -65,27 +68,27 @@ int find_max_rule_args(RuleTable *rules) {
 }
 
 void generate_find_function(FILE *stream, RuleTable *rules) {
-    fputs("ATerm match_and_transform(ATerm before) {\n", stream);
+    fputs("ATerm match_and_transform(ATerm before) {" NEWLINE, stream);
 
     // allocate terms for matches
     int max_args = find_max_rule_args(rules);
     if (max_args > 0) {
-        fputs("\t ATerm ", stream);
+        fputs(TAB "ATerm ", stream);
         for (int i = 0; i < max_args; i++) {
             fprintf(stream, "arg%d", i);
             if (i < max_args - 1) fputs(", ", stream);
         }
-        fputs(";\n", stream);
+        fputs(";" NEWLINE, stream);
     }
 
     for (int i = 0; i < rules->length; i++) {
-        fputs("\t ", stream);
+        fputs(TAB, stream);
         generate_find_case(stream, rules->rules[i], max_args);
-        fputs("\n", stream);
+        fputs(NEWLINE, stream);
     }
 
-    fputs("\t return NULL;\n", stream);
-    fputs("}\n", stream);
+    fputs(TAB "return NULL;" NEWLINE, stream);
+    fputs("}" NEWLINE, stream);
     fflush(stream);
 }
 
@@ -140,36 +143,36 @@ void generate_find_case(FILE *stream, Rule rule, int max_args) {
 }
 
 void generate_transform_functions(FILE *stream, RuleTable *rules) {
-    fputs("\n", stream);
+    fputs(NEWLINE, stream);
 
     for (int i = 0; i < rules->length; i++) {
         generate_transform_function(stream, rules->rules[i]);
-        fputs("\n", stream);
+        fputs(NEWLINE, stream);
     }
 
     fflush(stream);
 }
 
 void generate_transform_function(FILE *stream, Rule rule) {
-    fprintf(stream, "ATerm transform_%d(ATerm from, ATerm to, ATerm before) {\n", rule.id);
+    fprintf(stream, "ATerm transform_%d(ATerm from, ATerm to, ATerm before) {" NEWLINE, rule.id);
 
     // allocate from variables: ATerm a, b, c;
     ATermList from_vars = find_free_variables(rule.from, ATempty);
-    generate_variable_list(stream, from_vars, "\t ATerm ", ", ", ";\n");
+    generate_variable_list(stream, from_vars, TAB "ATerm ", ", ", ";" NEWLINE);
 
     // fill in values: ATmatchTerm(before, from, &a, &b, &c);
     // TODO need error check?
-    fputs("\t ATmatchTerm(before, from", stream);
+    fputs(TAB "ATmatchTerm(before, from", stream);
     generate_variable_list(stream, from_vars, ", &", ", &", NULL); // TODO need prefix
-    fputs(");\n", stream);
+    fputs(");" NEWLINE, stream);
 
     // make after term from to rule: return ATmakeTerm(to, a, c);
     ATermList to_vars = find_free_variables(rule.to, ATempty);
-    fputs("\t return ATmakeTerm(to", stream);
+    fputs(TAB "return ATmakeTerm(to", stream);
     generate_variable_list(stream, to_vars, ", ", ", ", NULL);
-    fputs(");\n", stream);
+    fputs(");" NEWLINE, stream);
 
-    fputs("}\n", stream);
+    fputs("}" NEWLINE, stream);
     fflush(stream);
 }
 
