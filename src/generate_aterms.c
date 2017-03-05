@@ -24,7 +24,7 @@ void generate_rule_table(FILE *stream, RuleTable *rules) {
         generate_rule_table_entry(stream, rules->rules[i]);
     }
 
-    fputs("}\n", stream);
+    fputs("}\n\n", stream);
     fflush(stream);
 }
 
@@ -32,7 +32,7 @@ void generate_rule_table_entry(FILE *stream, Rule rule) {
     fprintf(stream, "\t rule_table[%d].from = ATmake(\"", rule.id);
     ATfprintf(stream, "%t", replace_free_variables(rule.from));
     fputs("\"", stream);
-    
+
     int num_vars = count_free_variables(rule.from);
     if (num_vars > 0) fputs(", ", stream);
     for (int i = 0; i <= num_vars; i++) {
@@ -44,14 +44,14 @@ void generate_rule_table_entry(FILE *stream, Rule rule) {
     fprintf(stream, "\t rule_table[%d].to = ATmake(\"", rule.id);
     ATfprintf(stream, "%t", replace_free_variables(rule.to));
     fputs("\"", stream);
-    
+
     num_vars = count_free_variables(rule.to);
     if (num_vars > 0) fputs(", ", stream);
     for (int i = 0; i <= num_vars; i++) {
         fputs("term_placeholder", stream);
         if (i < num_vars) fputs(", ", stream);
     }
-    
+
     fputs(");\n", stream);
 }
 
@@ -89,6 +89,29 @@ void generate_find_function(FILE *stream, RuleTable *rules) {
     fflush(stream);
 }
 
+ATermList find_matching_rule_args(ATerm from, ATerm to) {
+    ATermList matches = ATempty;
+    ATermList from_vars = find_free_variables(from, ATempty);
+    ATermList to_vars = find_free_variables(to, ATempty);
+    while (!ATisEmpty(to_vars)) {
+        AFun to_var = ATgetAFun(ATgetFirst(to_vars));
+        ATermList _from_vars = from_vars;
+        int index = 0;
+        while (!ATisEmpty(_from_vars)) {
+            AFun from_var = ATgetAFun(ATgetFirst(_from_vars));
+            printf("%s == %s\n", ATgetName(to_var), ATgetName(from_var));
+            if (to_var == from_var) {
+                matches = ATinsert(matches, (ATerm) ATmakeInt(index));
+                break;
+            }
+            index++;
+            _from_vars = ATgetNext(_from_vars);
+        }
+        to_vars = ATgetNext(to_vars);
+    }
+    return matches;
+}
+
 void generate_find_case(FILE *stream, Rule rule, int max_args) {
     fprintf(stream, "if(ATmatchTerm(before, rule_table[%d].from", rule.id);
     if (max_args > 0) {
@@ -98,7 +121,21 @@ void generate_find_case(FILE *stream, Rule rule, int max_args) {
             if (i < max_args - 1) fputs(", ", stream);
         }
     }
-    fprintf(stream, ")) return transform_%d(rule_table[%d].from, rule_table[%d].to, before);", rule.id, rule.id, rule.id);
+
+    fprintf(stream, ")) return ATmakeTerm(rule_table[%d].to", rule.id);
+    ATermList matches = find_matching_rule_args(rule.from, rule.to);
+    ATbool vars_exist = !ATisEmpty(matches);
+    if (!ATisEmpty(matches)) {
+        fputs(", ", stream);
+        while (!ATisEmpty(matches)) {
+            int index = ATgetInt(ATgetFirst(matches));
+            fprintf(stream, "arg%d", index);
+            matches = ATgetNext(matches);
+            if (!ATisEmpty(matches)) fputs(", ", stream);
+        }
+    }
+    fputs(");", stream);
+
     fflush(stream);
 }
 

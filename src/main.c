@@ -17,7 +17,6 @@ int main(int argc, char** argv) {
     FILE* fd = fopen("generated/transform.c", "w");
     generate_headers(fd);
     generate_rule_table(fd, rules);
-    generate_transform_functions(fd, rules);
     generate_find_function(fd, rules);
     fclose(fd);
 
