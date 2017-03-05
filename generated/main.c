@@ -5,7 +5,10 @@
 #include "transform.h"
 
 ATerm parse(int argc, char **argv) {
-    if(argc < 2) exit(EXIT_FAILURE);
+    if(argc < 2){ 
+        printf("Usage: interpreter file\n");
+        exit(EXIT_FAILURE);
+    }
     return ATreadFromNamedFile(argv[1]);
 }
 

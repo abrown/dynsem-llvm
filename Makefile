@@ -64,7 +64,7 @@ build: .build-post
 clean: .clean-post
 
 .clean-pre:
-# Add your pre 'clean' code here...
+	make -C generated clean
 
 .clean-post: .clean-impl
 # Add your post 'clean' code here...
@@ -128,11 +128,10 @@ include nbproject/Makefile-impl.mk
 include nbproject/Makefile-variables.mk
 
 
-# generate
-generate: build
+# generate interpreter
+interpreter: build
 	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm
 	make -C generated
-	generated/interpreter
 
 
 # docker-specific
