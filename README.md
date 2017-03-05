@@ -1,10 +1,46 @@
 # dynsem-llvm
 
-Experimental project to compile a DynSem interpreter using LLVM. Disclaimer: this is not production code--it is very much an experiment.
+Experimental project to compile a DynSem interpreter using LLVM; in its current
+state it does not yet generate LLVM IR because of the functionality provided by
+the [aterms](https://github.com/cwi-swat/aterms) library. __Disclaimer: this 
+is not production code--it is very much an experiment.__
+
+# Build
+
+1. See `Dockerfile` for the compilers required to build the application
+2. Install the `meta-env` tool (necessary to build the aterms library):
+
+    ```
+    git clone https://github.com/cwi-swat/meta-environment
+    cd meta-environment/meta-build-env/
+    ./reconf
+    ./configure && make && make install
+    ```
+3. Install the `aterms` library:
+
+    ```
+    git clone https://github.com/cwi-swat/aterms
+    cd aterms/aterm
+    ./reconf
+    ./configure && make && make install
+    ```
+4. Build the generator with `make` (test with `make test`; note that this 
+project uses Netbeans-generated Makefiles and unit tests so they may hard to 
+read).
+5. Build an interpreter using the generator: `make interpreter`
 
 # Run
 
-The main application currently does nothing (e.g. `return 0`) but it can be built using `make` (uses Netbeans-generated Makefiles so they may hard to read). Tests (i.e. where the actual development is showcased) are run using `make test`; note that Netbeans auto-generates some interesting test output (e.g. `%%TEST_STARTED%% ...`) but the return codes should be sane.
+The generated interpreter sources and binaries will be located in the 
+`generated` directory. Run the interpreter by passing it a program, e.g. 
+`./interpreter program.aterm`. You should see a sequence of transformations:
+
+    ```
+    #0 a(1,2)
+    #1 b(1)
+    #2 c(1,0,42)
+    #3 42
+    ```
 
 # Questions
 

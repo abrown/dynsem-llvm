@@ -44,6 +44,7 @@
     </logicalFolder>
     <itemPath>.gitignore</itemPath>
     <itemPath>generated/Makefile</itemPath>
+    <itemPath>generated/program.aterm</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
@@ -62,7 +63,6 @@
           <commandlineTool>clang-5.0</commandlineTool>
           <incDir>
             <pElem>include</pElem>
-            <pElem>../llvm-3.9.1/include</pElem>
           </incDir>
         </cTool>
         <linkerTool>
@@ -89,6 +89,8 @@
         </linkerTool>
       </folder>
       <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="generated/program.aterm" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/generate.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -148,6 +150,8 @@
         </linkerTool>
       </folder>
       <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="generated/program.aterm" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/generate.h" ex="false" tool="3" flavor2="0">
       </item>

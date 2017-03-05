@@ -4,8 +4,9 @@
 #include <aterm2.h>
 #include "transform.h"
 
-ATerm parse() {
-    return ATmake("a(1, 2)");
+ATerm parse(int argc, char **argv) {
+    if(argc < 2) exit(EXIT_FAILURE);
+    return ATreadFromNamedFile(argv[1]);
 }
 
 ATbool is_finished(ATerm term) {
@@ -17,7 +18,7 @@ int main(int argc, char** argv) {
     ATinit(argc, argv, &bottom_of_stack);
 
     build_rules();
-    ATerm term = parse();
+    ATerm term = parse(argc, argv);
 
     int steps = 0;
     while (!is_finished(term)) {
