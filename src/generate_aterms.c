@@ -17,8 +17,8 @@ void generate_rule_table(FILE *stream, RuleTable *rules) {
     fputs("void build_rules() {\n", stream);
 
     // build placeholder
-    fputs("AFun term_symbol = ATmakeAFun(\"term\", 0, ATfalse);\n", stream);
-    fputs("ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term_symbol));\n", stream);
+    fputs("\t AFun term_symbol = ATmakeAFun(\"term\", 0, ATfalse);\n", stream);
+    fputs("\t ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term_symbol));\n", stream);
 
     for (int i = 0; i < rules->length; i++) {
         generate_rule_table_entry(stream, rules->rules[i]);
@@ -31,19 +31,56 @@ void generate_rule_table(FILE *stream, RuleTable *rules) {
 void generate_rule_table_entry(FILE *stream, Rule rule) {
     fprintf(stream, "\t rule_table[%d].from = ATmake(\"", rule.id);
     ATfprintf(stream, "%t", replace_free_variables(rule.from));
-    fputs("\");\n", stream);
+    fputs("\"", stream);
+    
+    int num_vars = count_free_variables(rule.from);
+    if (num_vars > 0) fputs(", ", stream);
+    for (int i = 0; i <= num_vars; i++) {
+        fputs("term_placeholder", stream);
+        if (i < num_vars) fputs(", ", stream);
+    }
+    fputs(");\n", stream);
 
     fprintf(stream, "\t rule_table[%d].to = ATmake(\"", rule.id);
     ATfprintf(stream, "%t", replace_free_variables(rule.to));
-    fputs("\");\n", stream);
+    fputs("\"", stream);
+    
+    num_vars = count_free_variables(rule.to);
+    if (num_vars > 0) fputs(", ", stream);
+    for (int i = 0; i <= num_vars; i++) {
+        fputs("term_placeholder", stream);
+        if (i < num_vars) fputs(", ", stream);
+    }
+    
+    fputs(");\n", stream);
+}
+
+int find_max_rule_args(RuleTable *rules) {
+    int max = 0;
+    for (int i = 0; i < rules->length; i++) {
+        int c = count_free_variables(rules->rules[i].from);
+        if (c > max) max = c;
+    }
+    return max;
 }
 
 void generate_find_function(FILE *stream, RuleTable *rules) {
     fputs("ATerm match_and_transform(ATerm before) {\n", stream);
 
+    // allocate terms for matches
+    int max_args = find_max_rule_args(rules);
+    if (max_args > 0) {
+        fputs("\t ATerm ", stream);
+        for (int i = 0; i < max_args; i++) {
+            fprintf(stream, "arg%d", i);
+            if (i < max_args - 1) fputs(", ", stream);
+        }
+        fputs(";\n", stream);
+    }
+
     for (int i = 0; i < rules->length; i++) {
         fputs("\t ", stream);
-        generate_find_case(stream, rules->rules[i]);
+        generate_find_case(stream, rules->rules[i], max_args);
         fputs("\n", stream);
     }
 
@@ -52,8 +89,16 @@ void generate_find_function(FILE *stream, RuleTable *rules) {
     fflush(stream);
 }
 
-void generate_find_case(FILE *stream, Rule rule) {
-    fprintf(stream, "if(ATmatchTerm(before, rule_table[%d].from)) return transform_%d(rule_table[%d].from, rule_table[%d].to, before);", rule.id, rule.id, rule.id, rule.id);
+void generate_find_case(FILE *stream, Rule rule, int max_args) {
+    fprintf(stream, "if(ATmatchTerm(before, rule_table[%d].from", rule.id);
+    if (max_args > 0) {
+        fputs(", ", stream);
+        for (int i = 0; i < max_args; i++) {
+            fprintf(stream, "&arg%d", i);
+            if (i < max_args - 1) fputs(", ", stream);
+        }
+    }
+    fprintf(stream, ")) return transform_%d(rule_table[%d].from, rule_table[%d].to, before);", rule.id, rule.id, rule.id);
     fflush(stream);
 }
 
@@ -138,7 +183,7 @@ ATerm iterate_free_variables(ATerm term, free_variables_cb callback, void *callb
 }
 
 ATerm find_free_variables_callback(ATerm current, void *_collector) {
-    ATermList *collector = (ATermList *)_collector;
+    ATermList *collector = (ATermList *) _collector;
     *collector = ATappend(*collector, current);
     return NULL;
 }
@@ -157,4 +202,16 @@ ATerm replace_free_variables_callback(ATerm current, void *nothing) {
 
 ATerm replace_free_variables(ATerm rule) {
     return iterate_free_variables(rule, replace_free_variables_callback, NULL);
+}
+
+ATerm count_free_variables_callback(ATerm current, void *_count) {
+    int *count = (int *) _count;
+    (*count)++;
+    return NULL;
+}
+
+int count_free_variables(ATerm rule) {
+    int count = 0;
+    iterate_free_variables(rule, count_free_variables_callback, &count);
+    return count;
 }

@@ -125,17 +125,10 @@ void test_generate_variable_list() {
     fclose(fd);
 }
 
-ATerm count_free_vars(ATerm current, void *data) {
-    int *count = (int *) data;
-    (*count)++;
-    return NULL;
-}
-
-void test_iterate_free_variables() {
+void test_count_free_variables() {
     ATerm a = ATmake("a(b, c, 98, [99, d, b])");
-    int count = 0;
 
-    iterate_free_variables(a, count_free_vars, &count);
+    int count = count_free_variables(a);
 
     assert(count == 4);
 }
@@ -172,7 +165,7 @@ int main(int argc, char** argv) {
     test(test_find_free_variables);
     test(test_replace_free_variables);
     test(test_generate_variable_list);
-    test(test_iterate_free_variables);
+    test(test_count_free_variables);
     test(test_iterate_and_replace_free_variables);
 
     printf("%%SUITE_FINISHED%% time=0\n");
