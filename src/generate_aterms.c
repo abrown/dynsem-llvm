@@ -98,75 +98,22 @@ int find_max_rule_args(RuleTable *rules) {
 void generate_find_function(FILE *stream, RuleTable *rules) {
     fputs("ATerm match_and_transform(ATerm before) {" NEWLINE, stream);
 
-    // allocate terms for matches
-    int max_args = find_max_rule_args(rules);
-    if (max_args > 0) {
-        fputs(TAB "ATerm ", stream);
-        for (int i = 0; i < max_args; i++) {
-            fprintf(stream, "arg%d", i);
-            if (i < max_args - 1) fputs(", ", stream);
-        }
-        fputs(";" NEWLINE, stream);
+    // allocate out variable (TODO will putting this on the stack be a mistake even with aterms?)
+    fputs(TAB "ATerm after;" NEWLINE, stream);
+    
+    // match
+    fputs(TAB "ATbool matched = ", stream);
+    for(int i = 0; i < rules->length; i++){
+        fprintf(stream, "transform_%d(rule_table[%d], before, &after)", i, i);
+        if(i < rules->length - 1) fputs(" || ", stream);
     }
+    fputs(";" NEWLINE, stream);
+    
+    // return
+    fputs(TAB "if(matched) return after;" NEWLINE, stream);
+    fputs(TAB "else return NULL;" NEWLINE, stream);
 
-    for (int i = 0; i < rules->length; i++) {
-        fputs(TAB, stream);
-        generate_find_case(stream, rules->rules[i], i, max_args);
-        fputs(NEWLINE, stream);
-    }
-
-    fputs(TAB "return NULL;" NEWLINE, stream);
     fputs("}" NEWLINE, stream);
-    fflush(stream);
-}
-
-ATermList find_matching_rule_args(ATerm from, ATerm to) {
-    ATermList matches = ATempty;
-    ATermList from_vars = find_free_variables(from, ATempty);
-    ATermList to_vars = find_free_variables(to, ATempty);
-    while (!ATisEmpty(to_vars)) {
-        AFun to_var = ATgetAFun(ATgetFirst(to_vars));
-        ATermList _from_vars = from_vars;
-        int index = 0;
-        while (!ATisEmpty(_from_vars)) {
-            AFun from_var = ATgetAFun(ATgetFirst(_from_vars));
-            if (to_var == from_var) {
-                log_debug("found matching argument for %s in 'from' rule", ATgetName(to_var));
-                matches = ATinsert(matches, (ATerm) ATmakeInt(index));
-                break;
-            }
-            index++;
-            _from_vars = ATgetNext(_from_vars);
-        }
-        to_vars = ATgetNext(to_vars);
-    }
-    return matches;
-}
-
-void generate_find_case(FILE *stream, Rule rule, int rule_index, int max_args) {
-    fprintf(stream, "if(ATmatchTerm(before, rule_table[%d].from", rule_index);
-    if (max_args > 0) {
-        fputs(", ", stream);
-        for (int i = 0; i < max_args; i++) {
-            fprintf(stream, "&arg%d", i);
-            if (i < max_args - 1) fputs(", ", stream);
-        }
-    }
-
-    fprintf(stream, ")) return ATmakeTerm(rule_table[%d].to", rule_index);
-    ATermList matches = find_matching_rule_args(rule.from, rule.to);
-    ATbool vars_exist = !ATisEmpty(matches);
-    if (!ATisEmpty(matches)) {
-        fputs(", ", stream);
-        while (!ATisEmpty(matches)) {
-            int index = ATgetInt(ATgetFirst(matches));
-            fprintf(stream, "arg%d", index);
-            matches = ATgetNext(matches);
-            if (!ATisEmpty(matches)) fputs(", ", stream);
-        }
-    }
-    fputs(");", stream);
-
     fflush(stream);
 }
 

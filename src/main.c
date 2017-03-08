@@ -7,7 +7,7 @@
 
 RuleTable *parse(int argc, char** argv) {
     Premise *premises = malloc(sizeof (Premise));
-    premises[0] = (Premise){.type = EQUALITY, .left = ATmake("x"), .right = ATmake("0")};
+    premises[0] = (Premise){.type = EQUALITY, .left = ATmake("x"), .right = ATmake("1")};
     
     RuleTable *rules = malloc(sizeof (RuleTable) + 3 * sizeof (Rule));
     rules->length = 3;
