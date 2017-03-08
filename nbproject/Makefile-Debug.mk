@@ -44,14 +44,16 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
-	${TESTDIR}/TestFiles/f3
+	${TESTDIR}/TestFiles/f3 \
+	${TESTDIR}/TestFiles/f1
 
 # Test Object Files
 TESTOBJECTFILES= \
-	${TESTDIR}/tests/aterms.o
+	${TESTDIR}/tests/aterms.o \
+	${TESTDIR}/tests/generate.o
 
 # C Compiler Flags
-CFLAGS=
+CFLAGS=-DLOG_INFO=1
 
 # CC Compiler Flags
 CCFLAGS=
@@ -100,11 +102,21 @@ ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/aterms.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.c} -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS}   
 
+${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/generate.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.c} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS}   
+
 
 ${TESTDIR}/tests/aterms.o: tests/aterms.c 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
 	$(COMPILE.c) -g -Iinclude -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/aterms.o tests/aterms.c
+
+
+${TESTDIR}/tests/generate.o: tests/generate.c 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.c) -g -Iinclude -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/generate.o tests/generate.c
 
 
 ${OBJECTDIR}/src/generate_aterms_nomain.o: ${OBJECTDIR}/src/generate_aterms.o src/generate_aterms.c 
@@ -151,6 +163,7 @@ ${OBJECTDIR}/src/test_assert_nomain.o: ${OBJECTDIR}/src/test_assert.o src/test_a
 	@if [ "${TEST}" = "" ]; \
 	then  \
 	    ${TESTDIR}/TestFiles/f3 || true; \
+	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \
 	fi

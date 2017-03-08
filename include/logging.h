@@ -7,28 +7,28 @@
 extern "C" {
 #endif
 
-#define log_error(format, ...) fprintf(stderr, "[ERROR] " format "\n", ##__VA_ARGS__);
+#define log_error(format, ...) ATfprintf(stderr, "[ERROR] " format "\n", ##__VA_ARGS__);
 
 #ifdef LOG_INFO
-#define log_info(format, ...) fprintf(stderr, "[INFO] " format "\n", ##__VA_ARGS__);
+#define log_info(format, ...) ATfprintf(stderr, "[INFO] " format "\n", ##__VA_ARGS__);
 #else
 #define log_info(format, ...) {}
 #endif
 
 #ifdef LOG_DEBUG
-#define log_debug(format, ...) fprintf(stderr, "[DEBUG] " format "\n", ##__VA_ARGS__);
+#define log_debug(format, ...) ATfprintf(stderr, "[DEBUG] " format "\n", ##__VA_ARGS__);
 #else
 #define log_debug(format, ...) {}
 #endif
 
 #ifdef LOG_TRACE
-#define log_trace(format, ...) fprintf(stderr, "[TRACE] " format "\n", ##__VA_ARGS__);
+#define log_trace(format, ...) ATfprintf(stderr, "[TRACE] " format "\n", ##__VA_ARGS__);
 #else
 #define log_trace(format, ...) {}
 #endif
 
 #ifdef LOG_CYCLE
-#define log_cycle(format, ...) fprintf(stderr, "[CYCLE] " format "\n", ##__VA_ARGS__);
+#define log_cycle(format, ...) ATfprintf(stderr, "[CYCLE] " format "\n", ##__VA_ARGS__);
 #else
 #define log_cycle(format, ...) {}
 #endif
