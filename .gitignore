@@ -1,5 +1,6 @@
 generated/transform.c
 generated/interpreter
+generated/types.h
 
 # Created by https://www.gitignore.io/api/netbeans,c
 

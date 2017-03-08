@@ -3,10 +3,19 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+typedef enum { REDUCTION = 0, EQUALITY, INEQUALITY } PremiseType;
+
+typedef struct premise_t {
+    PremiseType type;
+    ATerm left;
+    ATerm right;
+} Premise;
+
 typedef struct rule_t {
-    int id;
     ATerm from;
     ATerm to;
+    int premises_length;
+    Premise *premises;
 } Rule;
 
 typedef struct rule_table_t {

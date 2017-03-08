@@ -131,6 +131,7 @@ include nbproject/Makefile-variables.mk
 # generate interpreter
 interpreter: build
 	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm
+	${CP} include/types.h generated/types.h
 	make -C generated
 
 
