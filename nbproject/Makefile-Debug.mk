@@ -49,8 +49,8 @@ TESTFILES= \
 
 # Test Object Files
 TESTOBJECTFILES= \
-	${TESTDIR}/src/tests/generate.o \
-	${TESTDIR}/tests/aterms.o
+	${TESTDIR}/tests/aterms.o \
+	${TESTDIR}/tests/generate.o
 
 # C Compiler Flags
 CFLAGS=-DLOG_INFO=1
@@ -102,7 +102,7 @@ ${TESTDIR}/TestFiles/f3: ${TESTDIR}/tests/aterms.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.c} -o ${TESTDIR}/TestFiles/f3 $^ ${LDLIBSOPTIONS}   
 
-${TESTDIR}/TestFiles/f1: ${TESTDIR}/src/tests/generate.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/generate.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.c} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS}   
 
@@ -113,10 +113,10 @@ ${TESTDIR}/tests/aterms.o: tests/aterms.c
 	$(COMPILE.c) -g -Iinclude -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/aterms.o tests/aterms.c
 
 
-${TESTDIR}/src/tests/generate.o: src/tests/generate.c 
-	${MKDIR} -p ${TESTDIR}/src/tests
+${TESTDIR}/tests/generate.o: tests/generate.c 
+	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.c) -g -Iinclude -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/src/tests/generate.o src/tests/generate.c
+	$(COMPILE.c) -g -Iinclude -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/generate.o tests/generate.c
 
 
 ${OBJECTDIR}/src/generate_aterms_nomain.o: ${OBJECTDIR}/src/generate_aterms.o src/generate_aterms.c 

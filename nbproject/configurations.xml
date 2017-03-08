@@ -29,7 +29,7 @@
         <itemPath>tests/aterms.c</itemPath>
       </logicalFolder>
       <logicalFolder name="f1" displayName="generate" projectFiles="true" kind="TEST">
-        <itemPath>src/tests/generate.c</itemPath>
+        <itemPath>tests/generate.c</itemPath>
       </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
@@ -133,9 +133,9 @@
       </item>
       <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/tests/generate.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/generate.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -215,9 +215,9 @@
       </item>
       <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="src/tests/generate.c" ex="false" tool="0" flavor2="0">
-      </item>
       <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/generate.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
   </confs>
