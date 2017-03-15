@@ -84,6 +84,7 @@ clobber: .clobber-post
 all: .all-post
 
 .all-pre:
+	parser
 # Add your pre 'all' code here...
 
 .all-post: .all-impl
@@ -126,6 +127,13 @@ include nbproject/Makefile-impl.mk
 
 # include project make variables
 include nbproject/Makefile-variables.mk
+
+# generate parser
+#PARSERDIR=${CND_BUILDDIR}/Debug/${CND_PLATFORM_Debug}
+PARSERDIR=src
+parser: src/dynsem.l src/dynsem.y
+	bison --output=${PARSERDIR}/dynsem.tab.c --defines=${PARSERDIR}/dynsem.tab.h src/dynsem.y
+	flex --outfile=${PARSERDIR}/dynsem.yy.c src/dynsem.l
 
 
 # generate interpreter

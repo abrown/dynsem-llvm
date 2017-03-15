@@ -1,4 +1,4 @@
 rules
-    a(x, y) --> b(x).
+    a(y, x) --> b(x).
     b(x) --> c(x, 0, 42).
     c(x, y, z) --> z.
