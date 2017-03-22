@@ -12,17 +12,17 @@ char *strdup(const char *s); // TODO remove this (added to get rid of warnings, 
 %%
 
 [ \t]           ; // ignore all whitespace
-"rules"         {log_info("found: rules"); return RULES;}
-"where"         {log_info("found: where"); return WHERE;}    
-\.      	{log_info("found: . (rule end)"); return RULE_END;}
-;               {log_info("found: ; (premise end)"); return PREMISE_END;}
-[a-zA-Z][a-zA-Z0-9]*    {log_info("found: symbol %s", yytext); yylval.text = strdup(yytext); return SYMBOL;}
-\"(\\.|[^\"])*\"        {log_info("found: string %s", yytext); yylval.text = strdup(yytext); return STRING;}
-[+-]?([0-9]*\.)?[0-9]+  {log_info("found: number"); yylval.text = strdup(yytext); return NUMBER;}
-"=="            {log_info("found: =="); return EQUALS;}
-"!="            {log_info("found: !="); return NOT_EQUALS;}
-"=>"            {log_info("found: =>"); return MATCH;}
-"-->"           {log_info("found: -->"); return ARROW;}
+"rules"         {log_debug("found: rules"); return RULES;}
+"where"         {log_debug("found: where"); return WHERE;}    
+\.      	{log_debug("found: . (rule end)"); return RULE_END;}
+;               {log_debug("found: ; (premise end)"); return PREMISE_END;}
+[a-zA-Z][a-zA-Z0-9]*    {log_debug("found: symbol %s", yytext); yylval.text = strdup(yytext); return SYMBOL;}
+\"(\\.|[^\"])*\"        {log_debug("found: string %s", yytext); yylval.text = strdup(yytext); return STRING;}
+[+-]?([0-9]*\.)?[0-9]+  {log_debug("found: number"); yylval.text = strdup(yytext); return NUMBER;}
+"=="            {log_debug("found: =="); return EQUALS;}
+"!="            {log_debug("found: !="); return NOT_EQUALS;}
+"=>"            {log_debug("found: =>"); return MATCH;}
+"-->"           {log_debug("found: -->"); return ARROW;}
 .               {return yytext[0];}
 
 %%

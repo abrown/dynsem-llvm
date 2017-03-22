@@ -80,6 +80,8 @@ void yyerror(const char* s);
 static List_T spec = NULL; // TODO figure out how to do this with yylval
 
 Rule *rule_allocate(char *from, char *to, List_T premises){
+    log_info("allocating rule: %s --> %s (%d premises)", from, to, List_length(premises));
+
     Rule *rule = malloc(sizeof(Rule));
     rule->from = ATmake(from);
     rule->to = ATmake(to);
@@ -90,6 +92,13 @@ Rule *rule_allocate(char *from, char *to, List_T premises){
 }
 
 Premise *premise_allocate(char *left, char *right, PremiseType type){
+    char *ts;
+    if(type == EQUALITY) ts = "==";
+    else if(type == INEQUALITY) ts = "!=";
+    else if(type == REDUCTION) ts = "=>";
+    else ts = "?";
+    log_info("allocating premise: %s %s %s", left, ts, right);
+
     Premise *premise = malloc(sizeof(Premise));
     premise->left = ATmake(left);
     premise->right = ATmake(right);
@@ -118,7 +127,7 @@ char *concat(int num_strings, ...) {
 }
 
 
-#line 122 "src/dynsem.tab.c" /* yacc.c:339  */
+#line 131 "src/dynsem.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -148,12 +157,12 @@ char *concat(int num_strings, ...) {
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 65 "src/dynsem.y" /* yacc.c:355  */
+#line 74 "src/dynsem.y" /* yacc.c:355  */
 
     #include <cii/list.h>
     #include "types.h"
 
-#line 157 "src/dynsem.tab.c" /* yacc.c:355  */
+#line 166 "src/dynsem.tab.c" /* yacc.c:355  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -179,14 +188,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 69 "src/dynsem.y" /* yacc.c:355  */
+#line 78 "src/dynsem.y" /* yacc.c:355  */
 
     char *text;
     Rule *rule;
     Premise *premise;
     List_T list;
 
-#line 190 "src/dynsem.tab.c" /* yacc.c:355  */
+#line 199 "src/dynsem.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -201,7 +210,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 205 "src/dynsem.tab.c" /* yacc.c:358  */
+#line 214 "src/dynsem.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -476,9 +485,9 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    83,    83,    84,    85,    86,    87,    88,    93,    94,
-      95,    96,    97,    97,    97,    98,    99,   100,   102,   103,
-     103,   103,   103,   104,   104,   105,   105,   106,   107,   108
+       0,    92,    92,    93,    94,    95,    96,    97,    99,   100,
+     101,   102,   103,   103,   103,   104,   105,   106,   108,   109,
+     109,   109,   109,   110,   110,   111,   111,   112,   113,   114
 };
 #endif
 
@@ -1530,112 +1539,109 @@ yyreduce:
     switch (yyn)
       {
           case 2:
-#line 83 "src/dynsem.y" /* yacc.c:1646  */
+#line 92 "src/dynsem.y" /* yacc.c:1646  */
     { (yyval.list) = List_list(NULL); spec = (yyval.list); }
-#line 1536 "src/dynsem.tab.c" /* yacc.c:1646  */
+#line 1545 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 84 "src/dynsem.y" /* yacc.c:1646  */
+#line 93 "src/dynsem.y" /* yacc.c:1646  */
     { (yyval.list) = List_append((yyvsp[-1].list), (yyvsp[0].list)); spec = (yyval.list); }
-#line 1542 "src/dynsem.tab.c" /* yacc.c:1646  */
+#line 1551 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 85 "src/dynsem.y" /* yacc.c:1646  */
+#line 94 "src/dynsem.y" /* yacc.c:1646  */
     { (yyval.list) = List_append((yyval.list), (yyvsp[0].list)); }
-#line 1548 "src/dynsem.tab.c" /* yacc.c:1646  */
+#line 1557 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 86 "src/dynsem.y" /* yacc.c:1646  */
+#line 95 "src/dynsem.y" /* yacc.c:1646  */
     { (yyval.list) = List_list((yyvsp[0].rule), NULL); }
-#line 1554 "src/dynsem.tab.c" /* yacc.c:1646  */
+#line 1563 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 87 "src/dynsem.y" /* yacc.c:1646  */
+#line 96 "src/dynsem.y" /* yacc.c:1646  */
     { (yyval.list) = List_append((yyvsp[-1].list), List_list((yyvsp[0].rule), NULL)); }
-#line 1560 "src/dynsem.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 7:
-#line 88 "src/dynsem.y" /* yacc.c:1646  */
-    { 
-    log_info("found rule: %s --> %s (%d premises)", (yyvsp[-4].text), (yyvsp[-2].text), List_length((yyvsp[-1].list)));
-    (yyval.rule) = rule_allocate((yyvsp[-4].text), (yyvsp[-2].text), (yyvsp[-1].list));
-}
 #line 1569 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 8:
-#line 93 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.list) = List_list(NULL); log_info("creating empty list"); }
+  case 7:
+#line 97 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.rule) = rule_allocate((yyvsp[-4].text), (yyvsp[-2].text), (yyvsp[-1].list)); }
 #line 1575 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 9:
-#line 94 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.list) = (yyvsp[0].list); }
+  case 8:
+#line 99 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.list) = List_list(NULL); }
 #line 1581 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 10:
-#line 95 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.list) = List_list((yyvsp[0].premise), NULL); log_info("creating list"); }
+  case 9:
+#line 100 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.list) = (yyvsp[0].list); }
 #line 1587 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 11:
-#line 96 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.list) = List_append((yyvsp[-1].list), List_list((yyvsp[0].premise), NULL)); log_info("appending to list"); }
+  case 10:
+#line 101 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.list) = List_list((yyvsp[0].premise), NULL); }
 #line 1593 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 15:
-#line 98 "src/dynsem.y" /* yacc.c:1646  */
-    { log_info("found equality premise"); (yyval.premise) = premise_allocate((yyvsp[-3].text), (yyvsp[-1].text), EQUALITY); }
+  case 11:
+#line 102 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.list) = List_append((yyvsp[-1].list), List_list((yyvsp[0].premise), NULL)); }
 #line 1599 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 16:
-#line 99 "src/dynsem.y" /* yacc.c:1646  */
-    { log_info("found inequality premise"); (yyval.premise) = premise_allocate((yyvsp[-3].text), (yyvsp[-1].text), INEQUALITY); }
+  case 15:
+#line 104 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.premise) = premise_allocate((yyvsp[-3].text), (yyvsp[-1].text), EQUALITY); }
 #line 1605 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 17:
-#line 100 "src/dynsem.y" /* yacc.c:1646  */
-    { log_info("found match premise"); (yyval.premise) = premise_allocate((yyvsp[-3].text), (yyvsp[-1].text), REDUCTION); }
+  case 16:
+#line 105 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.premise) = premise_allocate((yyvsp[-3].text), (yyvsp[-1].text), INEQUALITY); }
 #line 1611 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 18:
-#line 102 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.text) = (yyvsp[0].text); log_info("found term: %s", (yyvsp[0].text)); }
+  case 17:
+#line 106 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.premise) = premise_allocate((yyvsp[-3].text), (yyvsp[-1].text), REDUCTION); }
 #line 1617 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 24:
-#line 104 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.text) = concat(3, (yyvsp[-2].text), ",", (yyvsp[0].text)); }
+  case 18:
+#line 108 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.text) = (yyvsp[0].text); log_debug("found term: %s", (yyvsp[0].text)); }
 #line 1623 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 26:
-#line 105 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.text) = concat(4, (yyvsp[-3].text), "(", (yyvsp[-1].text), ")"); }
+  case 24:
+#line 110 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.text) = concat(3, (yyvsp[-2].text), ",", (yyvsp[0].text)); }
 #line 1629 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
-  case 27:
-#line 106 "src/dynsem.y" /* yacc.c:1646  */
-    { (yyval.text) = concat(3, "(", (yyvsp[-1].text), ")"); }
+  case 26:
+#line 111 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.text) = concat(4, (yyvsp[-3].text), "(", (yyvsp[-1].text), ")"); }
 #line 1635 "src/dynsem.tab.c" /* yacc.c:1646  */
     break;
 
+  case 27:
+#line 112 "src/dynsem.y" /* yacc.c:1646  */
+    { (yyval.text) = concat(3, "(", (yyvsp[-1].text), ")"); }
+#line 1641 "src/dynsem.tab.c" /* yacc.c:1646  */
+    break;
 
-#line 1639 "src/dynsem.tab.c" /* yacc.c:1646  */
+
+#line 1645 "src/dynsem.tab.c" /* yacc.c:1646  */
         default: break;
       }
     if (yychar_backup != yychar)
@@ -1875,12 +1881,12 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 111 "src/dynsem.y" /* yacc.c:1906  */
+#line 117 "src/dynsem.y" /* yacc.c:1906  */
 
 
 
 List_T dynsem_parse(FILE *fd){
-    log_info("beginning parse: %d", fd);
+    log_info("beginning parse: fd == %d", fd);
 
     yyin = fd;
     do { 
@@ -1888,7 +1894,7 @@ List_T dynsem_parse(FILE *fd){
     } while(!feof(yyin));
     
     int num_rules = List_length(spec);
-    log_info("found rules: %d", num_rules);
+    log_info("parsed spec: %d rules", num_rules);
     return spec;
 }
 

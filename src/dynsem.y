@@ -15,6 +15,8 @@ void yyerror(const char* s);
 static List_T spec = NULL; // TODO figure out how to do this with yylval
 
 Rule *rule_allocate(char *from, char *to, List_T premises){
+    log_info("allocating rule: %s --> %s (%d premises)", from, to, List_length(premises));
+
     Rule *rule = malloc(sizeof(Rule));
     rule->from = ATmake(from);
     rule->to = ATmake(to);
@@ -25,6 +27,13 @@ Rule *rule_allocate(char *from, char *to, List_T premises){
 }
 
 Premise *premise_allocate(char *left, char *right, PremiseType type){
+    char *ts;
+    if(type == EQUALITY) ts = "==";
+    else if(type == INEQUALITY) ts = "!=";
+    else if(type == REDUCTION) ts = "=>";
+    else ts = "?";
+    log_info("allocating premise: %s %s %s", left, ts, right);
+
     Premise *premise = malloc(sizeof(Premise));
     premise->left = ATmake(left);
     premise->right = ATmake(right);
@@ -85,21 +94,18 @@ specifications: %empty { $$ = List_list(NULL); spec = $$; }
 specification: RULES rules { $$ = List_append($$, $2); };
 rules: rule { $$ = List_list($1, NULL); } 
     | rules rule { $$ = List_append($1, List_list($2, NULL)); };
-rule: term ARROW term optional_premises RULE_END { 
-    log_info("found rule: %s --> %s (%d premises)", $1, $3, List_length($4));
-    $$ = rule_allocate($1, $3, $4);
-};
+rule: term ARROW term optional_premises RULE_END { $$ = rule_allocate($1, $3, $4); };
 
-optional_premises: %empty { $$ = List_list(NULL); log_info("creating empty list"); } 
+optional_premises: %empty { $$ = List_list(NULL); } 
     | WHERE premises { $$ = $2; };
-premises: premise { $$ = List_list($1, NULL); log_info("creating list"); } 
-    | premises premise { $$ = List_append($1, List_list($2, NULL)); log_info("appending to list"); }
+premises: premise { $$ = List_list($1, NULL); } 
+    | premises premise { $$ = List_append($1, List_list($2, NULL)); }
 premise: equality_premise | inequality_premise | match_premise;
-equality_premise: term EQUALS term PREMISE_END { log_info("found equality premise"); $$ = premise_allocate($1, $3, EQUALITY); };
-inequality_premise: term NOT_EQUALS term PREMISE_END { log_info("found inequality premise"); $$ = premise_allocate($1, $3, INEQUALITY); };
-match_premise: term MATCH term PREMISE_END { log_info("found match premise"); $$ = premise_allocate($1, $3, REDUCTION); };
+equality_premise: term EQUALS term PREMISE_END { $$ = premise_allocate($1, $3, EQUALITY); };
+inequality_premise: term NOT_EQUALS term PREMISE_END { $$ = premise_allocate($1, $3, INEQUALITY); };
+match_premise: term MATCH term PREMISE_END { $$ = premise_allocate($1, $3, REDUCTION); };
 
-term: term_split                                { $$ = $1; log_info("found term: %s", $1); };
+term: term_split                                { $$ = $1; log_debug("found term: %s", $1); };
 term_split: term_constr | term_list | term_string | term_number;
 terms: term | terms ',' term                    { $$ = concat(3, $1, ",", $3); };
 term_constr: SYMBOL | SYMBOL '('  terms ')'     { $$ = concat(4, $1, "(", $3, ")"); };
@@ -112,7 +118,7 @@ term_number: NUMBER;
 
 
 List_T dynsem_parse(FILE *fd){
-    log_info("beginning parse: %d", fd);
+    log_info("beginning parse: fd == %d", fd);
 
     yyin = fd;
     do { 
@@ -120,7 +126,7 @@ List_T dynsem_parse(FILE *fd){
     } while(!feof(yyin));
     
     int num_rules = List_length(spec);
-    log_info("found rules: %d", num_rules);
+    log_info("parsed spec: %d rules", num_rules);
     return spec;
 }
 

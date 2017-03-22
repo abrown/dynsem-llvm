@@ -776,58 +776,58 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 15 "src/dynsem.l"
-{log_info("found: rules"); return RULES;}
+{log_debug("found: rules"); return RULES;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 16 "src/dynsem.l"
-{log_info("found: where"); return WHERE;}    
+{log_debug("found: where"); return WHERE;}    
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 17 "src/dynsem.l"
-{log_info("found: . (rule end)"); return RULE_END;}
+{log_debug("found: . (rule end)"); return RULE_END;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 18 "src/dynsem.l"
-{log_info("found: ; (premise end)"); return PREMISE_END;}
+{log_debug("found: ; (premise end)"); return PREMISE_END;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 19 "src/dynsem.l"
-{log_info("found: symbol %s", yytext); yylval.text = strdup(yytext); return SYMBOL;}
+{log_debug("found: symbol %s", yytext); yylval.text = strdup(yytext); return SYMBOL;}
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
 #line 20 "src/dynsem.l"
-{log_info("found: string %s", yytext); yylval.text = strdup(yytext); return STRING;}
+{log_debug("found: string %s", yytext); yylval.text = strdup(yytext); return STRING;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 21 "src/dynsem.l"
-{log_info("found: number"); yylval.text = strdup(yytext); return NUMBER;}
+{log_debug("found: number"); yylval.text = strdup(yytext); return NUMBER;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 22 "src/dynsem.l"
-{log_info("found: =="); return EQUALS;}
+{log_debug("found: =="); return EQUALS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 23 "src/dynsem.l"
-{log_info("found: !="); return NOT_EQUALS;}
+{log_debug("found: !="); return NOT_EQUALS;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 24 "src/dynsem.l"
-{log_info("found: =>"); return MATCH;}
+{log_debug("found: =>"); return MATCH;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 25 "src/dynsem.l"
-{log_info("found: -->"); return ARROW;}
+{log_debug("found: -->"); return ARROW;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
