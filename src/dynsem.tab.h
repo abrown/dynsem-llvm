@@ -39,6 +39,13 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 65 "src/dynsem.y" /* yacc.c:1909  */
+
+    #include <cii/list.h>
+    #include "types.h"
+
+#line 49 "src/dynsem.tab.h" /* yacc.c:1909  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -64,11 +71,14 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 75 "src/dynsem.y" /* yacc.c:1909  */
+#line 69 "src/dynsem.y" /* yacc.c:1909  */
 
     char *text;
+    Rule *rule;
+    Premise *premise;
+    List_T list;
 
-#line 72 "src/dynsem.tab.h" /* yacc.c:1909  */
+#line 82 "src/dynsem.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

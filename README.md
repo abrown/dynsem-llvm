@@ -24,10 +24,21 @@ is not production code--it is very much an experiment.__
     ./reconf
     ./configure && make && make install
     ```
-4. Build the generator with `make` (test with `make test`; note that this 
+
+4. Install the `cii` library (Ubuntu-specific):
+
+    ```
+    git clone https://github.com/drh/cii
+    cd cii
+    make -k THREADS=
+    sudo ln -s ./include /usr/local/include/cii
+    sudo ln -s ./libcii.a /usr/local/lib/libcii.a
+    ```
+
+5. Build the generator with `make` (test with `make test`; note that this 
 project uses Netbeans-generated Makefiles and unit tests so they may hard to 
 read).
-5. Build an interpreter using the generator: `make interpreter`
+6. Build an interpreter using the generator: `make interpreter`
 
 # Run
 

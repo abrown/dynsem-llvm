@@ -54,7 +54,6 @@
     <itemPath>specs/fibonacci.ds</itemPath>
     <itemPath>generated/program.aterm</itemPath>
     <itemPath>specs/test.ds</itemPath>
-    <itemPath>test.ds</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
@@ -79,6 +78,7 @@
         <linkerTool>
           <linkerLibItems>
             <linkerLibLibItem>ATerm</linkerLibLibItem>
+            <linkerLibFileItem>/usr/local/lib/libcii.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -162,8 +162,6 @@
       <item path="src/main.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="test.ds" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -273,8 +271,6 @@
       <item path="src/main.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/test_assert.c" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="test.ds" ex="false" tool="3" flavor2="0">
       </item>
       <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
       </item>

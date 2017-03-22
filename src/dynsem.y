@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <cii/list.h>
 #include "types.h"
 #include "logging.h"
 
@@ -11,26 +12,25 @@ extern int yyparse();
 extern FILE* yyin;
 void yyerror(const char* s);
 
-typedef struct premise_list_t {
-    Premise premise;
-    struct premise_list_t *next;
-} PremiseList;
+static List_T spec = NULL; // TODO figure out how to do this with yylval
 
-typedef struct rule_list_t {
-    Rule rule;
-    PremiseList *premises;
-    struct rule_list_t *next;
-} RuleList;
-
-static int _num_rules = 0;
-static Rule cursor;
-static RuleList rules;
-void rule_append(char *left, char *right){
-    _num_rules++;
-    log_info("Left: %s", left);
-    log_info("Right: %s", right);
+Rule *rule_allocate(char *from, char *to, List_T premises){
+    Rule *rule = malloc(sizeof(Rule));
+    rule->from = ATmake(from);
+    rule->to = ATmake(to);
+    rule->premise_list = premises;
+    rule->premises_length = 0;
+    rule->premises = NULL;
+    return rule;
 }
-void premise_append(char *left, char *right, PremiseType type);
+
+Premise *premise_allocate(char *left, char *right, PremiseType type){
+    Premise *premise = malloc(sizeof(Premise));
+    premise->left = ATmake(left);
+    premise->right = ATmake(right);
+    premise->type = type;
+    return premise;
+}
 
 char *concat(int num_strings, ...) {
     int size = 0;
@@ -62,28 +62,42 @@ char *concat(int num_strings, ...) {
 %token <text> SYMBOL NUMBER STRING
 
 %start specifications
+%code requires {
+    #include <cii/list.h>
+    #include "types.h"
+}
 %union {
     char *text;
+    Rule *rule;
+    Premise *premise;
+    List_T list;
 }
 %type <text> term term_split terms term_constr term_list term_string term_number;
-
+%type <list> specification specifications rules optional_premises premises 
+%type <premise> premise equality_premise inequality_premise match_premise
+%type <rule> rule
 
 %%
 
-specifications: /* EMPTY */ | specifications specification;
-specification: RULES rules { log_info("found rule set"); };
-rules: rule | rules rule;
+
+specifications: %empty { $$ = List_list(NULL); spec = $$; } 
+    | specifications specification { $$ = List_append($1, $2); spec = $$; };
+specification: RULES rules { $$ = List_append($$, $2); };
+rules: rule { $$ = List_list($1, NULL); } 
+    | rules rule { $$ = List_append($1, List_list($2, NULL)); };
 rule: term ARROW term optional_premises RULE_END { 
-    log_info("found rule: %s --> %s", $1, $3);
-//    rule_append($1, $3);
+    log_info("found rule: %s --> %s (%d premises)", $1, $3, List_length($4));
+    $$ = rule_allocate($1, $3, $4);
 };
 
-optional_premises: /* EMPTY */ | WHERE premises;
-premises: premise | premises premise;
+optional_premises: %empty { $$ = List_list(NULL); log_info("creating empty list"); } 
+    | WHERE premises { $$ = $2; };
+premises: premise { $$ = List_list($1, NULL); log_info("creating list"); } 
+    | premises premise { $$ = List_append($1, List_list($2, NULL)); log_info("appending to list"); }
 premise: equality_premise | inequality_premise | match_premise;
-equality_premise: term EQUALS term PREMISE_END { log_info("found equality premise"); };
-inequality_premise: term NOT_EQUALS term PREMISE_END { log_info("found inequality premise"); };
-match_premise: term MATCH term PREMISE_END { log_info("found match premise"); };
+equality_premise: term EQUALS term PREMISE_END { log_info("found equality premise"); $$ = premise_allocate($1, $3, EQUALITY); };
+inequality_premise: term NOT_EQUALS term PREMISE_END { log_info("found inequality premise"); $$ = premise_allocate($1, $3, INEQUALITY); };
+match_premise: term MATCH term PREMISE_END { log_info("found match premise"); $$ = premise_allocate($1, $3, REDUCTION); };
 
 term: term_split                                { $$ = $1; log_info("found term: %s", $1); };
 term_split: term_constr | term_list | term_string | term_number;
@@ -95,7 +109,9 @@ term_number: NUMBER;
 
 
 %%
-int dynsem_parse(FILE *fd){
+
+
+List_T dynsem_parse(FILE *fd){
     log_info("beginning parse: %d", fd);
 
     yyin = fd;
@@ -103,11 +119,12 @@ int dynsem_parse(FILE *fd){
         yyparse();
     } while(!feof(yyin));
     
-    log_info("found rules: %d", _num_rules);
-    return _num_rules;
+    int num_rules = List_length(spec);
+    log_info("found rules: %d", num_rules);
+    return spec;
 }
 
 void yyerror(const char* s) {
-	fprintf(stderr, "Parse error: %s\n", s);
-	exit(1);
+    fprintf(stderr, "Parse error: %s\n", s);
+    exit(1);
 }

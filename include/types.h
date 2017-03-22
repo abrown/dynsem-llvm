@@ -1,4 +1,5 @@
-#include <aterm1.h> 
+#include <aterm1.h>
+#include <cii/list.h>
 
 #ifndef TYPES_H
 #define TYPES_H
@@ -14,6 +15,7 @@ typedef struct premise_t {
 typedef struct rule_t {
     ATerm from;
     ATerm to;
+    List_T premise_list; // unused in interpreter
     int premises_length;
     Premise *premises;
 } Rule;

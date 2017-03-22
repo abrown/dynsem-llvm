@@ -4,30 +4,46 @@
 #include <aterm2.h>
 #include "types.h"
 #include "generate.h"
+#include "logging.h"
 
-RuleTable *parse(int argc, char** argv) {
-    Premise *premises = malloc(sizeof (Premise));
-    premises[0] = (Premise){.type = EQUALITY, .left = ATmake("x"), .right = ATmake("1")};
-    
-    RuleTable *rules = malloc(sizeof (RuleTable) + 3 * sizeof (Rule));
+extern List_T dynsem_parse(FILE *fd);
+
+RuleTable *convert(List_T spec) {
+    int num_rules = List_length(spec);
+    RuleTable *rules = malloc(sizeof (RuleTable) + num_rules * sizeof (Rule));
     rules->length = 3;
-    rules->rules[0] = (Rule){.from = ATmake("a(x, y)"), .to = ATmake("b(x)"), .premises_length = 1, .premises = premises};
-    rules->rules[1] = (Rule){.from = ATmake("b(x)"), .to = ATmake("c(x, 0, 42)"), .premises_length = 0, .premises = NULL};
-    rules->rules[2] = (Rule){.from = ATmake("c(x, y, z)"), .to = ATmake("z"), .premises_length = 0, .premises = NULL};
+
+    for (int i = 0; spec; spec = spec->rest, i++) {
+        Rule rule = *(Rule *) spec->first;
+        rules->rules[i] = rule;
+
+        rule.premises_length = List_length(rule.premise_list);
+        rule.premises = NULL;
+        if (rule.premises_length > 0) {
+            rule.premises = malloc(rule.premises_length * sizeof (Premise));
+            List_T old_premises = rule.premise_list;
+            for (int i = 0; old_premises; old_premises = old_premises->rest, i++) {
+                Premise premise = *(Premise *) old_premises->first;
+                rule.premises[i] = premise;
+            }
+        }
+    }
+    
     return rules;
 }
 
-RuleTable *parse2(int argc, char** argv) {
+RuleTable *parse(int argc, char** argv) {
     if (argc < 2) {
         printf("Usage: dynsem-llvm spec.ds\n");
         exit(EXIT_FAILURE);
     }
 
-    RuleTable *rules;
     FILE* fd = fopen(argv[1], "r");
-    // TODO 
+    List_T spec = dynsem_parse(fd);
     fclose(fd);
-    return rules;
+    log_info("Found %d rules", List_length(spec));
+
+    return convert(spec);
 }
 
 int main(int argc, char** argv) {

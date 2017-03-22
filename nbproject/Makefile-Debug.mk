@@ -70,11 +70,13 @@ FFLAGS=
 ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lATerm
+LDLIBSOPTIONS=-lATerm /usr/local/lib/libcii.a
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm
+
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm: /usr/local/lib/libcii.a
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}

@@ -53,7 +53,7 @@ CCADMIN=CCadmin
 # build
 build: .build-post
 
-.build-pre:
+.build-pre: parser
 # Add your pre 'build' code here...
 
 .build-post: .build-impl
@@ -84,7 +84,6 @@ clobber: .clobber-post
 all: .all-post
 
 .all-pre:
-	parser
 # Add your pre 'all' code here...
 
 .all-post: .all-impl
@@ -136,11 +135,17 @@ parser: src/dynsem.l src/dynsem.y
 	flex --outfile=${PARSERDIR}/dynsem.yy.c src/dynsem.l
 
 
-# generate interpreter
+# generate interpreter from example spec
 interpreter: build
-	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm
+	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm specs/test.ds
 	${CP} include/types.h generated/types.h
 	make -C generated
+
+
+# run example program
+example: interpreter
+	generated/interpreter generated/program.aterm
+	
 
 
 # docker-specific
