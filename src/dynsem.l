@@ -19,7 +19,7 @@ char *strdup(const char *s); // TODO remove this (added to get rid of warnings, 
 [a-zA-Z][a-zA-Z0-9]*    {log_info("found: symbol %s", yytext); yylval.text = strdup(yytext); return SYMBOL;}
 \"(\\.|[^\"])*\"        {log_info("found: string %s", yytext); yylval.text = strdup(yytext); return STRING;}
 [+-]?([0-9]*\.)?[0-9]+  {log_info("found: number"); yylval.text = strdup(yytext); return NUMBER;}
-==              {log_info("found: =="); return EQUALS;}
+"=="            {log_info("found: =="); return EQUALS;}
 "!="            {log_info("found: !="); return NOT_EQUALS;}
 "=>"            {log_info("found: =>"); return MATCH;}
 "-->"           {log_info("found: -->"); return ARROW;}

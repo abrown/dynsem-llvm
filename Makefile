@@ -135,17 +135,18 @@ parser: src/dynsem.l src/dynsem.y
 	flex --outfile=${PARSERDIR}/dynsem.yy.c src/dynsem.l
 
 
-# generate interpreter from example spec
-interpreter: build
-	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm specs/test.ds
+# build and run example program
+example: build
+	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm specs/example.ds
 	${CP} include/types.h generated/types.h
 	make -C generated
-
-
-# run example program
-example: interpreter
-	generated/interpreter generated/program.aterm
+	generated/interpreter specs/example.aterm
 	
+fibonacci: build
+	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm specs/fibonacci.ds
+	${CP} include/types.h generated/types.h
+	make -C generated
+	generated/interpreter specs/fibonacci.aterm
 
 
 # docker-specific

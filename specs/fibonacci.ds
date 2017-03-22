@@ -1,0 +1,8 @@
+rules
+    fib(0) --> 1.
+    fib(1) --> 1.
+    fib(x) --> y
+    where 
+        subI(x, 1) => a;
+        subI(x, 2) => b;
+        addI(fib(a), fib(b)) => y; .

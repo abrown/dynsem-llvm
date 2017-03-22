@@ -51,6 +51,8 @@
     <itemPath>generated/Makefile</itemPath>
     <itemPath>src/dynsem.l</itemPath>
     <itemPath>src/dynsem.y</itemPath>
+    <itemPath>specs/example.aterm</itemPath>
+    <itemPath>specs/fibonacci.aterm</itemPath>
     <itemPath>specs/fibonacci.ds</itemPath>
     <itemPath>generated/program.aterm</itemPath>
     <itemPath>specs/test.ds</itemPath>
@@ -142,6 +144,10 @@
       <item path="include/test_assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/example.aterm" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/fibonacci.aterm" ex="false" tool="3" flavor2="0">
       </item>
       <item path="specs/fibonacci.ds" ex="false" tool="3" flavor2="0">
       </item>
@@ -251,6 +257,10 @@
       <item path="include/test_assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/example.aterm" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/fibonacci.aterm" ex="false" tool="3" flavor2="0">
       </item>
       <item path="specs/fibonacci.ds" ex="false" tool="3" flavor2="0">
       </item>
