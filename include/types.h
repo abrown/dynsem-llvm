@@ -20,6 +20,16 @@ typedef struct rule_t {
     Premise *premises;
 } Rule;
 
+typedef struct native_t {
+    char *name;
+    char *code;
+} Native;
+
+typedef struct spec_t {
+    List_T rules;
+    List_T natives;
+} Specification;
+
 typedef struct rule_table_t {
     int length;
     Rule rules[];

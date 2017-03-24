@@ -7,12 +7,13 @@
 #include "types.h"
 #include "logging.h"
 
+// generated in dynsem.l
 extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
 void yyerror(const char* s);
 
-static List_T spec = NULL; // TODO figure out how to do this with yylval
+static Specification *spec = NULL;
 
 Rule *rule_allocate(char *from, char *to, List_T premises){
     log_info("allocating rule: %s --> %s (%d premises)", from, to, List_length(premises));
@@ -24,6 +25,14 @@ Rule *rule_allocate(char *from, char *to, List_T premises){
     rule->premises_length = 0;
     rule->premises = NULL;
     return rule;
+}
+
+Native *native_allocate(char *name, char *code) {
+    log_info("allocating native operator: %s", name);
+    Native *native = malloc(sizeof(Native));
+    native->name = name;
+    native->code = code;
+    return native;
 }
 
 Premise *premise_allocate(char *left, char *right, PremiseType type){
@@ -66,35 +75,44 @@ char *concat(int num_strings, ...) {
 %define parse.error verbose
 %define parse.lac full
 
-%token RULES WHERE RULE_END PREMISE_END
-%token ARROW MATCH EQUALS NOT_EQUALS 
-%token <text> SYMBOL NUMBER STRING
-
-%start specifications
 %code requires {
     #include <cii/list.h>
     #include "types.h"
 }
+
 %union {
     char *text;
     Rule *rule;
+    Native *native;
     Premise *premise;
     List_T list;
 }
+
+%start specifications
+
+%token RULES WHERE NATIVE RULE_END PREMISE_END
+%token ARROW MATCH EQUALS NOT_EQUALS 
+%token <text> SYMBOL NUMBER STRING CODE
+
 %type <text> term term_split terms term_constr term_list term_string term_number;
-%type <list> specification specifications rules optional_premises premises 
+%type <list> rules natives optional_premises premises 
 %type <premise> premise equality_premise inequality_premise match_premise
 %type <rule> rule
+%type <native> native
 
 %%
 
+specifications: %empty {} | specifications specification {};
+specification: RULES rules { spec->rules = List_append(spec->rules, $2); } 
+    | NATIVE natives { spec->natives = List_append(spec->natives, $2); };
 
-specifications: %empty { $$ = List_list(NULL); spec = $$; } 
-    | specifications specification { $$ = List_append($1, $2); spec = $$; };
-specification: RULES rules { $$ = List_append($$, $2); };
 rules: rule { $$ = List_list($1, NULL); } 
     | rules rule { $$ = List_append($1, List_list($2, NULL)); };
 rule: term ARROW term optional_premises RULE_END { $$ = rule_allocate($1, $3, $4); };
+
+natives: native { $$ = List_list($1, NULL); } 
+    | natives native { $$ = List_append($1, List_list($2, NULL)); };
+native: SYMBOL CODE RULE_END { $$ = native_allocate($1, $2); };
 
 optional_premises: %empty { $$ = List_list(NULL); } 
     | WHERE premises { $$ = $2; };
@@ -117,16 +135,18 @@ term_number: NUMBER;
 %%
 
 
-List_T dynsem_parse(FILE *fd){
+Specification *dynsem_parse(FILE *fd){
     log_info("beginning parse: fd == %d", fd);
+    spec = malloc(sizeof(Specification));
+    spec->rules = NULL;
+    spec->natives = NULL;
 
     yyin = fd;
     do { 
         yyparse();
     } while(!feof(yyin));
     
-    int num_rules = List_length(spec);
-    log_info("parsed spec: %d rules", num_rules);
+    log_info("parsed spec: %d rules, %d native operators", List_length(spec->rules), List_length(spec->natives));
     return spec;
 }
 

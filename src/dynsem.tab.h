@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 74 "src/dynsem.y" /* yacc.c:1909  */
+#line 78 "src/dynsem.y" /* yacc.c:1909  */
 
     #include <cii/list.h>
     #include "types.h"
@@ -54,15 +54,17 @@ extern int yydebug;
   {
     RULES = 258,
     WHERE = 259,
-    RULE_END = 260,
-    PREMISE_END = 261,
-    ARROW = 262,
-    MATCH = 263,
-    EQUALS = 264,
-    NOT_EQUALS = 265,
-    SYMBOL = 266,
-    NUMBER = 267,
-    STRING = 268
+    NATIVE = 260,
+    RULE_END = 261,
+    PREMISE_END = 262,
+    ARROW = 263,
+    MATCH = 264,
+    EQUALS = 265,
+    NOT_EQUALS = 266,
+    SYMBOL = 267,
+    NUMBER = 268,
+    STRING = 269,
+    CODE = 270
   };
 #endif
 
@@ -71,14 +73,15 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 78 "src/dynsem.y" /* yacc.c:1909  */
+#line 83 "src/dynsem.y" /* yacc.c:1909  */
 
     char *text;
     Rule *rule;
+    Native *native;
     Premise *premise;
     List_T list;
 
-#line 82 "src/dynsem.tab.h" /* yacc.c:1909  */
+#line 85 "src/dynsem.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

@@ -6,7 +6,7 @@
 #include "generate.h"
 #include "logging.h"
 
-extern List_T dynsem_parse(FILE *fd);
+extern Specification *dynsem_parse(FILE *fd);
 
 RuleTable *convert(List_T spec) {
     int num_rules = List_length(spec);
@@ -40,11 +40,11 @@ RuleTable *parse(int argc, char** argv) {
     }
 
     FILE* fd = fopen(argv[1], "r");
-    List_T spec = dynsem_parse(fd);
+    Specification *spec = dynsem_parse(fd);
     fclose(fd);
     log_info("Found %d rules", List_length(spec));
 
-    return convert(spec);
+    return convert(spec->rules);
 }
 
 RuleTable *add_native(RuleTable *rules){
