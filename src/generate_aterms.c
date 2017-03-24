@@ -167,8 +167,9 @@ void generate_premise(FILE *stream, Premise *premise, int index) {
     fprintf(stream, TAB "// premise #%d" NEWLINE, index);
 
     // build left-hand side
-    fprintf(stream, TAB "ATerm p%d = ATmakeTerm(rule.premises[%d].left", index, index);
-    generate_variable_list(stream, find_free_variables(premise->left, ATempty), ", ", ", ", ");" NEWLINE);
+    fprintf(stream, TAB "ATerm p%d = match_and_transform(ATmakeTerm(rule.premises[%d].left", index, index);
+    generate_variable_list(stream, find_free_variables(premise->left, ATempty), ", ", ", ", "));" NEWLINE);
+    fprintf(stream, TAB "if (p%d == NULL) return ATfalse;" NEWLINE, index);
 
     // match right-hand side
     switch (premise->type) {
@@ -177,7 +178,7 @@ void generate_premise(FILE *stream, Premise *premise, int index) {
             ATermList premise_free_vars = find_free_variables(premise->right, ATempty);
             generate_variable_list(stream, premise_free_vars, TAB "ATerm ", ", ", ";" NEWLINE);
             fprintf(stream, TAB "rc = ATmatchTerm(p%d, rule.premises[%d].right", index, index);
-            generate_variable_list(stream, premise_free_vars, ", &", ", &", NULL);
+            generate_variable_list(stream, premise_free_vars, ", &", ", &", ");" NEWLINE);
             fputs(TAB "if(!rc) return ATfalse;" NEWLINE, stream);
             break;
         case EQUALITY:

@@ -52,10 +52,10 @@
     <itemPath>src/dynsem.l</itemPath>
     <itemPath>src/dynsem.y</itemPath>
     <itemPath>specs/example.aterm</itemPath>
+    <itemPath>specs/example.ds</itemPath>
     <itemPath>specs/fibonacci.aterm</itemPath>
     <itemPath>specs/fibonacci.ds</itemPath>
     <itemPath>generated/program.aterm</itemPath>
-    <itemPath>specs/test.ds</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
@@ -147,11 +147,11 @@
       </item>
       <item path="specs/example.aterm" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="specs/example.ds" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="specs/fibonacci.aterm" ex="false" tool="3" flavor2="0">
       </item>
       <item path="specs/fibonacci.ds" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="specs/test.ds" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/dynsem.l" ex="false" tool="3" flavor2="0">
       </item>
@@ -260,11 +260,11 @@
       </item>
       <item path="specs/example.aterm" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="specs/example.ds" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="specs/fibonacci.aterm" ex="false" tool="3" flavor2="0">
       </item>
       <item path="specs/fibonacci.ds" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="specs/test.ds" ex="false" tool="3" flavor2="0">
       </item>
       <item path="src/dynsem.l" ex="false" tool="3" flavor2="0">
       </item>

@@ -11,11 +11,10 @@ extern List_T dynsem_parse(FILE *fd);
 RuleTable *convert(List_T spec) {
     int num_rules = List_length(spec);
     RuleTable *rules = malloc(sizeof (RuleTable) + num_rules * sizeof (Rule));
-    rules->length = 3;
+    rules->length = num_rules;
 
     for (int i = 0; spec; spec = spec->rest, i++) {
         Rule rule = *(Rule *) spec->first;
-        rules->rules[i] = rule;
 
         rule.premises_length = List_length(rule.premise_list);
         rule.premises = NULL;
@@ -27,6 +26,8 @@ RuleTable *convert(List_T spec) {
                 rule.premises[i] = premise;
             }
         }
+        
+        rules->rules[i] = rule;
     }
     
     return rules;
@@ -46,11 +47,16 @@ RuleTable *parse(int argc, char** argv) {
     return convert(spec);
 }
 
+RuleTable *add_native(RuleTable *rules){
+    return rules;
+}
+
 int main(int argc, char** argv) {
     ATerm bottom_of_stack;
     ATinit(argc, argv, &bottom_of_stack);
 
     RuleTable *rules = parse(argc, argv);
+    rules = add_native(rules);
 
     FILE* fd = fopen("generated/transform.c", "w");
     generate_headers(fd);
