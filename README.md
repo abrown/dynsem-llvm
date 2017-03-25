@@ -50,12 +50,12 @@ The generated interpreter sources and binaries will be located in the
 `generated` directory. Run the interpreter by passing it a program, e.g. 
 `./interpreter program.aterm`. You should see a sequence of transformations:
 
-    ```
-    #0 a(1,2)
-    #1 b(1)
-    #2 c(1,0,42)
-    #3 42
-    ```
+```
+#0 a(1,2)
+#1 b(1)
+#2 c(1,0,42)
+#3 42
+```
 
 # To-do
 
