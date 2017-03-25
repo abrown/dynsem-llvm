@@ -35,6 +35,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/allocation.o \
+	${OBJECTDIR}/src/dynsem.tab.o \
+	${OBJECTDIR}/src/dynsem.yy.o \
 	${OBJECTDIR}/src/generate_aterms.o \
 	${OBJECTDIR}/src/main.o \
 	${OBJECTDIR}/src/test_assert.o
@@ -45,12 +48,14 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 # Test Files
 TESTFILES= \
 	${TESTDIR}/TestFiles/f3 \
-	${TESTDIR}/TestFiles/f1
+	${TESTDIR}/TestFiles/f1 \
+	${TESTDIR}/TestFiles/f2
 
 # Test Object Files
 TESTOBJECTFILES= \
 	${TESTDIR}/tests/aterms.o \
-	${TESTDIR}/tests/generate.o
+	${TESTDIR}/tests/generate.o \
+	${TESTDIR}/tests/parser.o
 
 # C Compiler Flags
 CFLAGS=
@@ -75,6 +80,21 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/src/allocation.o: src/allocation.c
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/allocation.o src/allocation.c
+
+${OBJECTDIR}/src/dynsem.tab.o: src/dynsem.tab.c
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dynsem.tab.o src/dynsem.tab.c
+
+${OBJECTDIR}/src/dynsem.yy.o: src/dynsem.yy.c
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dynsem.yy.o src/dynsem.yy.c
 
 ${OBJECTDIR}/src/generate_aterms.o: src/generate_aterms.c
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -106,6 +126,10 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/generate.o ${OBJECTFILES:%.o=%_nomain.
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.c} -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS}   
 
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/parser.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.c} -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS}   
+
 
 ${TESTDIR}/tests/aterms.o: tests/aterms.c 
 	${MKDIR} -p ${TESTDIR}/tests
@@ -118,6 +142,51 @@ ${TESTDIR}/tests/generate.o: tests/generate.c
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/generate.o tests/generate.c
 
+
+${TESTDIR}/tests/parser.o: tests/parser.c 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/parser.o tests/parser.c
+
+
+${OBJECTDIR}/src/allocation_nomain.o: ${OBJECTDIR}/src/allocation.o src/allocation.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/allocation.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.c) -O2 -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/allocation_nomain.o src/allocation.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/allocation.o ${OBJECTDIR}/src/allocation_nomain.o;\
+	fi
+
+${OBJECTDIR}/src/dynsem.tab_nomain.o: ${OBJECTDIR}/src/dynsem.tab.o src/dynsem.tab.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/dynsem.tab.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.c) -O2 -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dynsem.tab_nomain.o src/dynsem.tab.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/dynsem.tab.o ${OBJECTDIR}/src/dynsem.tab_nomain.o;\
+	fi
+
+${OBJECTDIR}/src/dynsem.yy_nomain.o: ${OBJECTDIR}/src/dynsem.yy.o src/dynsem.yy.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/dynsem.yy.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.c) -O2 -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/dynsem.yy_nomain.o src/dynsem.yy.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/dynsem.yy.o ${OBJECTDIR}/src/dynsem.yy_nomain.o;\
+	fi
 
 ${OBJECTDIR}/src/generate_aterms_nomain.o: ${OBJECTDIR}/src/generate_aterms.o src/generate_aterms.c 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -164,6 +233,7 @@ ${OBJECTDIR}/src/test_assert_nomain.o: ${OBJECTDIR}/src/test_assert.o src/test_a
 	then  \
 	    ${TESTDIR}/TestFiles/f3 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
+	    ${TESTDIR}/TestFiles/f2 || true; \
 	else  \
 	    ./${TEST} || true; \
 	fi

@@ -4,22 +4,32 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>include/allocation.h</itemPath>
+      <itemPath>src/dynsem.tab.h</itemPath>
       <itemPath>include/generate.h</itemPath>
       <itemPath>include/generate_aterms.h</itemPath>
       <itemPath>include/logging.h</itemPath>
+      <itemPath>include/parsing.h</itemPath>
       <itemPath>include/test_assert.h</itemPath>
       <itemPath>include/types.h</itemPath>
-    </logicalFolder>
-    <logicalFolder name="ResourceFiles"
-                   displayName="Resource Files"
-                   projectFiles="true">
     </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>src/allocation.c</itemPath>
+      <itemPath>src/dynsem.l</itemPath>
+      <itemPath>src/dynsem.tab.c</itemPath>
+      <itemPath>src/dynsem.y</itemPath>
+      <itemPath>src/dynsem.yy.c</itemPath>
       <itemPath>src/generate_aterms.c</itemPath>
       <itemPath>src/main.c</itemPath>
       <itemPath>src/test_assert.c</itemPath>
+    </logicalFolder>
+    <logicalFolder name="f1" displayName="Specs" projectFiles="true" kind="ROOT">
+      <itemPath>specs/example.aterm</itemPath>
+      <itemPath>specs/example.ds</itemPath>
+      <itemPath>specs/fibonacci.aterm</itemPath>
+      <itemPath>specs/fibonacci.ds</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -31,12 +41,14 @@
       <logicalFolder name="f1" displayName="generate" projectFiles="true" kind="TEST">
         <itemPath>tests/generate.c</itemPath>
       </logicalFolder>
+      <logicalFolder name="f2" displayName="parser" projectFiles="true" kind="TEST">
+        <itemPath>tests/parser.c</itemPath>
+      </logicalFolder>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
-      <itemPath>Makefile</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -46,10 +58,6 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
     <itemPath>.gitignore</itemPath>
-    <itemPath>generated/Makefile</itemPath>
-    <itemPath>specs/fibonacci.ds</itemPath>
-    <itemPath>generated/program.aterm</itemPath>
-    <itemPath>specs/test.ds</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>src</Elem>
@@ -58,7 +66,7 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
-        <compilerSet>GNU|GNU</compilerSet>
+        <compilerSet>CLang|CLang</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
@@ -74,6 +82,7 @@
         <linkerTool>
           <linkerLibItems>
             <linkerLibLibItem>ATerm</linkerLibLibItem>
+            <linkerLibFileItem>/usr/local/lib/libcii.a</linkerLibFileItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>
@@ -94,6 +103,21 @@
           <output>${TESTDIR}/TestFiles/f1</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
       <folder path="TestFiles/f3">
         <cTool>
           <incDir>
@@ -109,9 +133,7 @@
           <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
-      <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="generated/program.aterm" ex="false" tool="3" flavor2="0">
+      <item path="include/allocation.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/generate.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -119,13 +141,31 @@
       </item>
       <item path="include/logging.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/parsing.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/test_assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="specs/example.aterm" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/example.ds" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/fibonacci.aterm" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="specs/fibonacci.ds" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="specs/test.ds" ex="false" tool="3" flavor2="0">
+      <item path="src/allocation.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/dynsem.l" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/dynsem.tab.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/dynsem.tab.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/dynsem.y" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/dynsem.yy.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/generate_aterms.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -136,6 +176,8 @@
       <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="tests/generate.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/parser.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -176,6 +218,21 @@
           <output>${TESTDIR}/TestFiles/f1</output>
         </linkerTool>
       </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
       <folder path="TestFiles/f3">
         <cTool>
           <incDir>
@@ -191,9 +248,7 @@
           <output>${TESTDIR}/TestFiles/f3</output>
         </linkerTool>
       </folder>
-      <item path="generated/Makefile" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="generated/program.aterm" ex="false" tool="3" flavor2="0">
+      <item path="include/allocation.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/generate.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -201,13 +256,31 @@
       </item>
       <item path="include/logging.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/parsing.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/test_assert.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/types.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="specs/example.aterm" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/example.ds" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="specs/fibonacci.aterm" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="specs/fibonacci.ds" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="specs/test.ds" ex="false" tool="3" flavor2="0">
+      <item path="src/allocation.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/dynsem.l" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/dynsem.tab.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/dynsem.tab.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/dynsem.y" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/dynsem.yy.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="src/generate_aterms.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -218,6 +291,8 @@
       <item path="tests/aterms.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="tests/generate.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/parser.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
   </confs>

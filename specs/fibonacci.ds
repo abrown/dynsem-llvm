@@ -1,0 +1,28 @@
+
+rules
+    fib(0) --> 1.
+    fib(1) --> 1.
+    fib(x) --> y
+    where 
+        subI(x, 1) => a;
+        subI(x, 2) => b;
+        fib(a) => a2;
+        fib(b) => b2;
+        addI(a2, b2) => y; .
+
+native operators
+    addI {
+        int a, b;
+        ATbool rc = ATmatch(before, "addI(<int>, <int>)", &a, &b);
+        if(!rc) return ATfalse;
+        *after = (ATerm) ATmakeInt(a + b);
+        return ATtrue;
+    }.
+    subI {
+        int a, b;
+        ATbool rc = ATmatch(before, "subI(<int>, <int>)", &a, &b);
+        if(!rc) return ATfalse;
+        *after = (ATerm) ATmakeInt(a - b);
+        return ATtrue;
+    }.
+
