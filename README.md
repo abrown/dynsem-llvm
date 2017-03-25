@@ -65,6 +65,7 @@ The generated interpreter sources and binaries will be located in the
 - Figure out how to install `build-meta-env` in the Dockerfile; running into environment issues
 - Use a templating library like [mustach](https://gitlab.com/jobol/mustach) to avoid the vast amount of unreadable `puts` and `fprintf` in the generator
 - Self-contain the third-party libraries as git submodules and install in the `3rd` directory to avoid OS-level installs
+- Add better logging for premise-level transformations
 
 # Documentation
 
@@ -74,3 +75,4 @@ The generated interpreter sources and binaries will be located in the
 - [Tolmach: Notes on Patterns](doc/tolmach-pattern-notes.pdf)
 - [Maranget: Compiling Pattern Matching to Good Decision Trees](http://moscova.inria.fr/~maranget/papers/ml05e-maranget.pdf)
 - [Scott and Ramsey: When Do Match-Compilation Heuristics Matter?](https://pdfs.semanticscholar.org/b8d1/e3b73db3e6549334cc7c20da060516c3188a.pdf)
+- [ATerm Library Reference](http://homepages.cwi.nl/~daybuild/daily-books/technology/aterm-guide/aterm-guide.html)
