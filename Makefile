@@ -128,24 +128,24 @@ include nbproject/Makefile-impl.mk
 include nbproject/Makefile-variables.mk
 
 # generate parser
-#PARSERDIR=${CND_BUILDDIR}/Debug/${CND_PLATFORM_Debug}
 PARSERDIR=src
 parser: src/dynsem.l src/dynsem.y
 	bison --output=${PARSERDIR}/dynsem.tab.c --defines=${PARSERDIR}/dynsem.tab.h src/dynsem.y
 	flex --outfile=${PARSERDIR}/dynsem.yy.c src/dynsem.l
 
-
-# build and run example program
+# build and run example programs
 example: build
 	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm specs/example.ds
-	${CP} include/types.h generated/types.h
+	@echo ''
 	make -C generated
+	@echo ''
 	generated/interpreter specs/example.aterm
 	
 fibonacci: build
 	${CND_DISTDIR}/Debug/GNU-Linux/dynsem-llvm specs/fibonacci.ds
-	${CP} include/types.h generated/types.h
+	@echo ''
 	make -C generated
+	@echo ''
 	generated/interpreter specs/fibonacci.aterm
 
 

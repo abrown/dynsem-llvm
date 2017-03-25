@@ -3,11 +3,10 @@
 #include <cii/list.h>
 #include "test_assert.h"
 #include "types.h"
-
-List_T dynsem_parse(FILE *fd);
+#include "parsing.h"
 
 void test_create_rules() {
-    Rule a = {.from = ATmake("a(b, c)"), .to = ATmake("d(b)"), .premises_length = 0, .premises = NULL};
+    Rule a = {.from = ATmake("a(b, c)"), .to = ATmake("d(b)"), .premises = NULL};
     List_T rules = List_list(&a, NULL);
     assert(List_length(rules) == 1);
 
@@ -17,9 +16,9 @@ void test_create_rules() {
 }
 
 void test_parse_spec() {
-    FILE *fd = fopen("specs/test.ds", "r");
-    List_T rules = dynsem_parse(fd);
-    assert(List_length(rules) == 3);
+    FILE *fd = fopen("specs/example.ds", "r");
+    Specification *spec = dynsem_parse(fd);
+    assert(List_length(spec->rules) == 3);
 }
 
 int main(int argc, char** argv) {

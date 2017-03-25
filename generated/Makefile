@@ -17,7 +17,10 @@ TARGETDIR=.
 
 
 # Build the interpreter
-all: $(TARGETDIR)/interpreter
+all: reuse_types $(TARGETDIR)/interpreter
+	
+reuse_types:
+	cp ../include/types.h types.h
 
 # Link or archive
 $(TARGETDIR)/interpreter: $(TARGETDIR) $(OBJS_main.c) $(DEPLIBS_main.c)

@@ -15,13 +15,13 @@ NM=nm
 CCADMIN=CCadmin
 RANLIB=ranlib
 CC=clang-5.0
-CCC=clang++-5.0
-CXX=clang++-5.0
+CCC=g++
+CXX=g++
 FC=gfortran
 AS=as
 
 # Macros
-CND_PLATFORM=CLang-Linux
+CND_PLATFORM=GNU-Linux
 CND_DLIB_EXT=so
 CND_CONF=Debug
 CND_DISTDIR=dist

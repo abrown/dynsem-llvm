@@ -38,7 +38,11 @@ is not production code--it is very much an experiment.__
 5. Build the generator with `make` (test with `make test`; note that this 
 project uses Netbeans-generated Makefiles and unit tests so they may hard to 
 read).
-6. Build an interpreter using the generator: `make interpreter`
+6. Generate the interpreter code using the generator and a specification file 
+(see `specs` directory): `dist/Debug/[OS]/dynsem-llvm [spec-file.ds]`. This will
+generate code in the `generated` directory that you can build with 
+`make -C generated`. For an example of this, see the `fibonacci` and `example`
+make targets (or run `make fibonacci`/`make example`).
 
 # Run
 
@@ -53,28 +57,6 @@ The generated interpreter sources and binaries will be located in the
     #3 42
     ```
 
-# Questions
-
-- Can I manipulate the AST directly in memory and `free` pruned nodes as the 
-transformation progresses? In other words, should I be changing the pointers of 
-the AST or memcopying into a new tree?
-
-    With `aterms` we can worry about this less; it has some garbage collection
-    and reuses shared nodes when it can
-
-- Should I generate integer symbols for each constructor so that I can use 
-integer comparisons instead of string comparisons in the pattern matching?
-
-    `aterms` hashes the constructor name and does address comparisons
-
-- Does the interpreter need to have knowledge of the DynSem type system or can 
-it all be statically checked before it gets to the interpreter?
-
-- Currently the constants are variably-sized so I do a `strncmp` to match them; 
-I would like to be able to use int/float comparisons when possible but that 
-seems to indicate that I will have more than one `Constant` type (one for each 
-DynSem type?)
-
 # To-do
 
 - Generate LLVM IR from DynSem specification instead of hand-coding C (as currently done in tests)
@@ -82,6 +64,7 @@ DynSem type?)
 - Add semantic components: I can find generally optimal implementations of maps/lists but they must be reversible--in a rule with three side-effect premises if the third premise fails, the interpreter must be able to "undo" the side-effects (are these the "frames" in the implementation?) 
 - Figure out how to install `build-meta-env` in the Dockerfile; running into environment issues
 - Use a templating library like [mustach](https://gitlab.com/jobol/mustach) to avoid the vast amount of unreadable `puts` and `fprintf` in the generator
+- Self-contain the third-party libraries as git submodules and install in the `3rd` directory to avoid OS-level installs
 
 # Documentation
 

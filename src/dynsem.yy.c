@@ -800,7 +800,7 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 18 "src/dynsem.l"
-{log_info("found: native"); return NATIVE;}
+{log_debug("found: native"); return NATIVE;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
@@ -857,7 +857,7 @@ case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 #line 29 "src/dynsem.l"
-{log_info("found: code %s", yytext); yylval.text = strdup(yytext); return CODE;}
+{log_debug("found: code %s", yytext); yylval.text = strdup(yytext); return CODE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
