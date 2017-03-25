@@ -30,14 +30,4 @@ typedef struct spec_t {
     List_T natives;
 } Specification;
 
-typedef struct rule_table_t {
-    int length;
-    Rule rules[];
-} RuleTable;
-
-typedef enum return_code_t {
-    SUCCESS = 0, FAILURE
-} Result;
-
 #endif /* TYPES_H */
-
