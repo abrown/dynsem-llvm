@@ -62,16 +62,16 @@ rule: term ARROW term optional_premises RULE_END { $$ = rule_allocate($1, $3, $4
 
 natives: native { $$ = List_list($1, NULL); } 
     | natives native { $$ = List_append($1, List_list($2, NULL)); };
-native: SYMBOL CODE RULE_END { $$ = native_allocate($1, $2); };
+native: SYMBOL CODE { $$ = native_allocate($1, $2); };
 
 optional_premises: %empty { $$ = List_list(NULL); } 
     | WHERE premises { $$ = $2; };
 premises: premise { $$ = List_list($1, NULL); } 
-    | premises premise { $$ = List_append($1, List_list($2, NULL)); }
+    | premises PREMISE_END premise { $$ = List_append($1, List_list($3, NULL)); }
 premise: equality_premise | inequality_premise | match_premise;
-equality_premise: term EQUALS term PREMISE_END { $$ = premise_allocate($1, $3, EQUALITY); };
-inequality_premise: term NOT_EQUALS term PREMISE_END { $$ = premise_allocate($1, $3, INEQUALITY); };
-match_premise: term MATCH term PREMISE_END { $$ = premise_allocate($1, $3, REDUCTION); };
+equality_premise: term EQUALS term { $$ = premise_allocate($1, $3, EQUALITY); };
+inequality_premise: term NOT_EQUALS term { $$ = premise_allocate($1, $3, INEQUALITY); };
+match_premise: term MATCH term { $$ = premise_allocate($1, $3, REDUCTION); };
 
 term: term_split                                { $$ = $1; log_debug("found term: %s", $1); };
 term_split: term_constr | term_list | term_string | term_number;

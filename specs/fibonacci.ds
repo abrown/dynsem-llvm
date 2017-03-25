@@ -8,7 +8,7 @@ rules
         subI(x, 2) => b;
         fib(a) => a2;
         fib(b) => b2;
-        addI(a2, b2) => y; .
+        addI(a2, b2) => y.
 
 native operators
     addI {
@@ -17,12 +17,12 @@ native operators
         if(!rc) return ATfalse;
         *after = (ATerm) ATmakeInt(a + b);
         return ATtrue;
-    }.
+    }
     subI {
         int a, b;
         ATbool rc = ATmatch(before, "subI(<int>, <int>)", &a, &b);
         if(!rc) return ATfalse;
         *after = (ATerm) ATmakeInt(a - b);
         return ATtrue;
-    }.
+    }
 
