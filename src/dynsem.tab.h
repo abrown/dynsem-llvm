@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 78 "src/dynsem.y" /* yacc.c:1909  */
+#line 28 "src/dynsem.y" /* yacc.c:1909  */
 
     #include <cii/list.h>
     #include "types.h"
@@ -73,7 +73,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 83 "src/dynsem.y" /* yacc.c:1909  */
+#line 33 "src/dynsem.y" /* yacc.c:1909  */
 
     char *text;
     Rule *rule;

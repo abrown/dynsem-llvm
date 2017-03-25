@@ -7,8 +7,7 @@ CPPFLAGS_main.c = \
 	-I.
 OBJS_main.c =  \
 	$(TARGETDIR)/main.o \
-	$(TARGETDIR)/transform.o \
-	$(TARGETDIR)/native.o
+	$(TARGETDIR)/transform.o
 USERLIBS_main.c = -lATerm $(SYSLIBS_main.c) 
 DEPLIBS_main.c =   
 LDLIBS_main.c = $(USERLIBS_main.c)
@@ -30,9 +29,6 @@ $(TARGETDIR)/main.o: $(TARGETDIR) main.c
 
 $(TARGETDIR)/transform.o: $(TARGETDIR) transform.c
 	$(COMPILE.c) $(CFLAGS_main.c) $(CPPFLAGS_main.c) -o $@ transform.c
-	
-$(TARGETDIR)/native.o: $(TARGETDIR) native.c
-	$(COMPILE.c) $(CFLAGS_main.c) $(CPPFLAGS_main.c) -o $@ native.c
 
 # Clean target deletes all generated files
 clean:

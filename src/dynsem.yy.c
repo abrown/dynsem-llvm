@@ -505,13 +505,15 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "src/dynsem.l"
 #line 4 "src/dynsem.l"
+
 #include <stdio.h>
 #include <string.h>
 char *strdup(const char *s); // TODO remove this (added to get rid of warnings, should be in string.h)
 #define YY_DECL int yylex()
 #include "dynsem.tab.h"
 #include "logging.h"
-#line 515 "src/dynsem.yy.c"
+
+#line 517 "src/dynsem.yy.c"
 
 #define INITIAL 0
 
@@ -698,10 +700,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 12 "src/dynsem.l"
+#line 14 "src/dynsem.l"
 
 
-#line 705 "src/dynsem.yy.c"
+#line 707 "src/dynsem.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -787,87 +789,87 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 14 "src/dynsem.l"
+#line 16 "src/dynsem.l"
 ; // ignore all whitespace
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 15 "src/dynsem.l"
+#line 17 "src/dynsem.l"
 {log_debug("found: rules"); return RULES;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 16 "src/dynsem.l"
+#line 18 "src/dynsem.l"
 {log_info("found: native"); return NATIVE;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 17 "src/dynsem.l"
+#line 19 "src/dynsem.l"
 {log_debug("found: where"); return WHERE;}    
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 18 "src/dynsem.l"
+#line 20 "src/dynsem.l"
 {log_debug("found: . (rule end)"); return RULE_END;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 19 "src/dynsem.l"
+#line 21 "src/dynsem.l"
 {log_debug("found: ; (premise end)"); return PREMISE_END;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 20 "src/dynsem.l"
+#line 22 "src/dynsem.l"
 {log_debug("found: symbol %s", yytext); yylval.text = strdup(yytext); return SYMBOL;}
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 21 "src/dynsem.l"
+#line 23 "src/dynsem.l"
 {log_debug("found: string %s", yytext); yylval.text = strdup(yytext); return STRING;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 22 "src/dynsem.l"
+#line 24 "src/dynsem.l"
 {log_debug("found: number"); yylval.text = strdup(yytext); return NUMBER;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 23 "src/dynsem.l"
+#line 25 "src/dynsem.l"
 {log_debug("found: =="); return EQUALS;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 24 "src/dynsem.l"
+#line 26 "src/dynsem.l"
 {log_debug("found: !="); return NOT_EQUALS;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 25 "src/dynsem.l"
+#line 27 "src/dynsem.l"
 {log_debug("found: =>"); return MATCH;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 26 "src/dynsem.l"
+#line 28 "src/dynsem.l"
 {log_debug("found: -->"); return ARROW;}
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 27 "src/dynsem.l"
+#line 29 "src/dynsem.l"
 {log_info("found: code %s", yytext); yylval.text = strdup(yytext); return CODE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 28 "src/dynsem.l"
+#line 30 "src/dynsem.l"
 {return yytext[0];}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 30 "src/dynsem.l"
+#line 32 "src/dynsem.l"
 ECHO;
 	YY_BREAK
-#line 871 "src/dynsem.yy.c"
+#line 873 "src/dynsem.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1865,7 +1867,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 30 "src/dynsem.l"
+#line 32 "src/dynsem.l"
 
 
 

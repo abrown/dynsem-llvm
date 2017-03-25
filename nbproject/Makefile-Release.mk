@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/allocation.o \
 	${OBJECTDIR}/src/dynsem.tab.o \
 	${OBJECTDIR}/src/dynsem.yy.o \
 	${OBJECTDIR}/src/generate_aterms.o \
@@ -79,6 +80,11 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm.exe: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/dynsem-llvm ${OBJECTFILES} ${LDLIBSOPTIONS}
+
+${OBJECTDIR}/src/allocation.o: src/allocation.c
+	${MKDIR} -p ${OBJECTDIR}/src
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -std=c11 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/allocation.o src/allocation.c
 
 ${OBJECTDIR}/src/dynsem.tab.o: src/dynsem.tab.c
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -142,6 +148,19 @@ ${TESTDIR}/tests/parser.o: tests/parser.c
 	${RM} "$@.d"
 	$(COMPILE.c) -O2 -I. -std=c11 -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/parser.o tests/parser.c
 
+
+${OBJECTDIR}/src/allocation_nomain.o: ${OBJECTDIR}/src/allocation.o src/allocation.c 
+	${MKDIR} -p ${OBJECTDIR}/src
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/src/allocation.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.c) -O2 -std=c11 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/allocation_nomain.o src/allocation.c;\
+	else  \
+	    ${CP} ${OBJECTDIR}/src/allocation.o ${OBJECTDIR}/src/allocation_nomain.o;\
+	fi
 
 ${OBJECTDIR}/src/dynsem.tab_nomain.o: ${OBJECTDIR}/src/dynsem.tab.o src/dynsem.tab.c 
 	${MKDIR} -p ${OBJECTDIR}/src

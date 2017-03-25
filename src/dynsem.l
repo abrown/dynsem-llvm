@@ -1,12 +1,14 @@
 %option noyywrap
 
 %{
+
 #include <stdio.h>
 #include <string.h>
 char *strdup(const char *s); // TODO remove this (added to get rid of warnings, should be in string.h)
 #define YY_DECL int yylex()
 #include "dynsem.tab.h"
 #include "logging.h"
+
 %}
 
 %%

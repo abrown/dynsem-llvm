@@ -7,6 +7,21 @@
 #define TAB "    "
 #define NEWLINE "\n"
 
+void assign_indices(Specification *spec) {
+    // assign indices to rules
+    int i = 0;
+    for (List_T rules = spec->rules; rules; rules = rules->rest, i++) {
+        Rule *r = (Rule *) rules->first;
+        r->index = i;
+        // assign indices to premises
+        int j = 0;
+        for (List_T premises = r->premises; premises; premises = premises->rest, j++) {
+            Premise *p = (Premise *) premises->first;
+            p->index = j;
+        }
+    }
+}
+
 void generate_headers(FILE *stream) {
     fputs("#include <aterm1.h>" NEWLINE, stream);
     fputs("#include <aterm2.h>" NEWLINE, stream);
@@ -15,13 +30,14 @@ void generate_headers(FILE *stream) {
     fflush(stream);
 }
 
-void generate_rule_table(FILE *stream, RuleTable *rules) {
+void generate_rule_table(FILE *stream, Specification *spec) {
     // build global variables
-    fprintf(stream, "Rule rule_table[%d];" NEWLINE, rules->length);
-    for (int i = 0; i < rules->length; i++) {
-        Rule r = rules->rules[i];
-        if (r.premises_length > 0) {
-            fprintf(stream, "Premise rule_%d_premises[%d];" NEWLINE, i, r.premises_length);
+    fprintf(stream, "Rule rule_table[%d];" NEWLINE, List_length(spec->rules));
+    for (List_T rules = spec->rules; rules; rules = rules->rest) {
+        Rule *r = (Rule *) rules->first;
+        int num_premises = List_length(r->premises);
+        if (num_premises > 0) {
+            fprintf(stream, "Premise rule_%d_premises[%d];" NEWLINE, r->index, num_premises);
         }
     }
 
@@ -32,17 +48,17 @@ void generate_rule_table(FILE *stream, RuleTable *rules) {
     fputs(TAB "AFun term_symbol = ATmakeAFun(\"term\", 0, ATfalse);" NEWLINE, stream);
     fputs(TAB "ATermPlaceholder term_placeholder = ATmakePlaceholder((ATerm) ATmakeAppl0(term_symbol));" NEWLINE, stream);
     fputs(NEWLINE, stream);
-    
+
     // setup each rule and premises
-    for (int i = 0; i < rules->length; i++) {
-        generate_rule_table_entry(stream, rules->rules[i], i);
+    for (List_T rules = spec->rules; rules; rules = rules->rest) {
+        generate_rule_table_entry(stream, (Rule *) rules->first);
     }
 
     fputs("}" NEWLINE NEWLINE, stream);
     fflush(stream);
 }
 
-void generate_patternized_make(FILE *stream, ATerm term){
+void generate_patternized_make(FILE *stream, ATerm term) {
     ATfprintf(stream, "ATmake(\"%t\"", replace_free_variables(term));
     int num_vars = count_free_variables(term);
     if (num_vars > 0) fputs(", ", stream);
@@ -51,64 +67,55 @@ void generate_patternized_make(FILE *stream, ATerm term){
         if (i < num_vars - 1) fputs(", ", stream);
     }
     fputs(");" NEWLINE, stream);
-    
+
     fflush(stream);
 }
 
-void generate_rule_table_entry(FILE *stream, Rule rule, int rule_index) {
+void generate_rule_table_entry(FILE *stream, Rule *rule) {
     // build 'from' pattern
-    fprintf(stream, TAB "rule_table[%d].from = ", rule_index);
-    generate_patternized_make(stream, rule.from);
+    fprintf(stream, TAB "rule_table[%d].from = ", rule->index);
+    generate_patternized_make(stream, rule->from);
 
     // build 'to' pattern
-    fprintf(stream, TAB "rule_table[%d].to = ", rule_index);
-    generate_patternized_make(stream, rule.to);
-    
-    // build 'premises_length'
-    fprintf(stream, TAB "rule_table[%d].premises_length = %d;" NEWLINE, rule_index, rule.premises_length);
+    fprintf(stream, TAB "rule_table[%d].to = ", rule->index);
+    generate_patternized_make(stream, rule->to);
 
     // build 'premises'
-    if (rule.premises_length > 0) {
-        for (int premise_index = 0; premise_index < rule.premises_length; premise_index++) {
-            Premise premise = rule.premises[premise_index];
-            fprintf(stream, TAB "rule_%d_premises[%d].type = %d;" NEWLINE, rule_index, premise_index, premise.type);
-            fprintf(stream, TAB "rule_%d_premises[%d].left = ", rule_index, premise_index);
-            generate_patternized_make(stream, premise.left);
-            fprintf(stream, TAB "rule_%d_premises[%d].right = ", rule_index, premise_index);
-            generate_patternized_make(stream, premise.right);
-            fprintf(stream, TAB "rule_table[%d].premises = rule_%d_premises;" NEWLINE, rule_index, rule_index);
+    if (List_length(rule->premises) > 0) {
+        for (List_T premises = rule->premises; premises; premises = premises->rest) {
+            Premise *premise = (Premise *) premises->first;
+            fprintf(stream, TAB "rule_%d_premises[%d].type = %d;" NEWLINE, rule->index, premise->index, premise->type);
+            fprintf(stream, TAB "rule_%d_premises[%d].left = ", rule->index, premise->index);
+            generate_patternized_make(stream, premise->left);
+            fprintf(stream, TAB "rule_%d_premises[%d].right = ", rule->index, premise->index);
+            generate_patternized_make(stream, premise->right);
+            fprintf(stream, TAB "rule_%d_premises[%d].index = %d;" NEWLINE, rule->index, premise->index, premise->index);
         }
-    } else {
-        fprintf(stream, TAB "rule_table[%d].premises = NULL;" NEWLINE, rule_index);
     }
 
     fputs(NEWLINE, stream);
     fflush(stream);
 }
 
-int find_max_rule_args(RuleTable *rules) {
-    int max = 0;
-    for (int i = 0; i < rules->length; i++) {
-        int c = count_free_variables(rules->rules[i].from);
-        if (c > max) max = c;
-    }
-    return max;
-}
-
-void generate_find_function(FILE *stream, RuleTable *rules) {
+void generate_match_function(FILE *stream, Specification *spec) {
     fputs("ATerm match_and_transform(ATerm before) {" NEWLINE, stream);
 
     // allocate out variable (TODO will putting this on the stack be a mistake even with aterms?)
     fputs(TAB "ATerm after;" NEWLINE, stream);
-    
+
     // match
     fputs(TAB "ATbool matched = ", stream);
-    for(int i = 0; i < rules->length; i++){
-        fprintf(stream, "transform_%d(rule_table[%d], before, &after)", i, i);
-        if(i < rules->length - 1) fputs(" || ", stream);
+    for (List_T natives = spec->natives; natives; natives = natives->rest) {
+        fprintf(stream, "%s(before, &after)", ((Native *) natives->first)->name);
+        if (natives->rest != NULL) fputs(" || ", stream);
+    }
+    if(List_length(spec->natives) > 0 && List_length(spec->rules) > 0) fputs(" || " NEWLINE TAB TAB, stream);
+    for (List_T rules = spec->rules; rules; rules = rules->rest) {
+        fprintf(stream, "transform_rule_%d(before, &after)", ((Rule *) rules->first)->index);
+        if (rules->rest != NULL) fputs(" || ", stream);
     }
     fputs(";" NEWLINE, stream);
-    
+
     // return
     fputs(TAB "if(matched) return after;" NEWLINE, stream);
     fputs(TAB "else return NULL;" NEWLINE, stream);
@@ -117,27 +124,54 @@ void generate_find_function(FILE *stream, RuleTable *rules) {
     fflush(stream);
 }
 
-void generate_transform_functions(FILE *stream, RuleTable *rules) {
+void generate_native_functions(FILE *stream, Specification *spec) {
     fputs(NEWLINE, stream);
 
-    for (int i = 0; i < rules->length; i++) {
-        generate_transform_function(stream, rules->rules[i], i);
+    for (List_T natives = spec->natives; natives; natives = natives->rest) {
+        generate_native_function(stream, (Native *) natives->first);
         fputs(NEWLINE, stream);
     }
 
     fflush(stream);
 }
 
-void generate_transform_function(FILE *stream, Rule rule, int rule_index) {
-    fprintf(stream, "ATbool transform_%d(Rule rule, ATerm before, ATerm *after) {" NEWLINE, rule_index);
+void generate_native_function(FILE *stream, Native *native) {
+    // write signature
+    fprintf(stream, "ATbool %s(ATerm before, ATerm *after) ", native->name);
+    
+    // write body
+    fprintf(stream, "%s", native->code);
+    
+    fputs(NEWLINE, stream);
+    fflush(stream);
+}
+
+void generate_rule_functions(FILE *stream, Specification *spec) {
+    fputs(NEWLINE, stream);
+
+    for (List_T rules = spec->rules; rules; rules = rules->rest) {
+        generate_rule_function(stream, (Rule *) rules->first);
+        fputs(NEWLINE, stream);
+    }
+
+    fflush(stream);
+}
+
+void generate_rule_function(FILE *stream, Rule *rule) {
+    // setup memory location of premise
+    char rule_location[1024];
+    snprintf(rule_location, 1024, "rule_table[%d]", rule->index);
+
+    // write signature
+    fprintf(stream, "ATbool transform_rule_%d(ATerm before, ATerm *after) {" NEWLINE, rule->index);
 
     // allocate from variables: ATerm a, b, c;
-    ATermList from_vars = find_free_variables(rule.from, ATempty);
+    ATermList from_vars = find_free_variables(rule->from, ATempty);
     generate_variable_list(stream, from_vars, TAB "ATerm ", ", ", ";" NEWLINE);
 
     // fill in values using 'from' rule: ATmatchTerm(before, from, &a, &b, &c);
     fputs(TAB "// initial match" NEWLINE, stream);
-    fputs(TAB "ATbool rc = ATmatchTerm(before, rule.from", stream);
+    fprintf(stream, TAB "ATbool rc = ATmatchTerm(before, %s.from", rule_location);
     generate_variable_list(stream, from_vars, ", &", ", &", NULL);
     fputs(");" NEWLINE, stream);
 
@@ -145,17 +179,17 @@ void generate_transform_function(FILE *stream, Rule rule, int rule_index) {
     fputs(TAB "if(!rc) return ATfalse;" NEWLINE, stream);
 
     // evaluate premises
-    for (int i = 0; i < rule.premises_length; i++) {
-        generate_premise(stream, &rule.premises[i], i);
+    for (List_T premises = rule->premises; premises; premises = premises->rest) {
+        generate_premise(stream, rule, (Premise *) premises->first);
     }
 
     // build term from 'to' rule: return ATmakeTerm(to, a, c);
     fputs(TAB "// final transform" NEWLINE, stream);
-    ATermList to_vars = find_free_variables(rule.to, ATempty);
-    fputs(TAB "*after = ATmakeTerm(rule.to", stream);
+    ATermList to_vars = find_free_variables(rule->to, ATempty);
+    fprintf(stream, TAB "*after = ATmakeTerm(%s.to", rule_location);
     generate_variable_list(stream, to_vars, ", ", ", ", NULL);
     fputs(");" NEWLINE, stream);
-    
+
     // return matched
     fputs(TAB "return ATtrue;" NEWLINE, stream);
 
@@ -163,13 +197,18 @@ void generate_transform_function(FILE *stream, Rule rule, int rule_index) {
     fflush(stream);
 }
 
-void generate_premise(FILE *stream, Premise *premise, int index) {
-    fprintf(stream, TAB "// premise #%d" NEWLINE, index);
+void generate_premise(FILE *stream, Rule *rule, Premise *premise) {
+    // setup memory location of premise
+    char premise_location[1024];
+    snprintf(premise_location, 1024, "rule_%d_premises[%d]", rule->index, premise->index);
+
+    // helpfully document
+    fprintf(stream, TAB "// premise #%d" NEWLINE, premise->index);
 
     // build left-hand side
-    fprintf(stream, TAB "ATerm p%d = match_and_transform(ATmakeTerm(rule.premises[%d].left", index, index);
+    fprintf(stream, TAB "ATerm p%d = match_and_transform(ATmakeTerm(%s.left", premise->index, premise_location);
     generate_variable_list(stream, find_free_variables(premise->left, ATempty), ", ", ", ", "));" NEWLINE);
-    fprintf(stream, TAB "if (p%d == NULL) return ATfalse;" NEWLINE, index);
+    fprintf(stream, TAB "if (p%d == NULL) return ATfalse;" NEWLINE, premise->index);
 
     // match right-hand side
     switch (premise->type) {
@@ -177,17 +216,17 @@ void generate_premise(FILE *stream, Premise *premise, int index) {
             log_debug("generating reduction premise: %t --> %t", premise->left, premise->right);
             ATermList premise_free_vars = find_free_variables(premise->right, ATempty);
             generate_variable_list(stream, premise_free_vars, TAB "ATerm ", ", ", ";" NEWLINE);
-            fprintf(stream, TAB "rc = ATmatchTerm(p%d, rule.premises[%d].right", index, index);
+            fprintf(stream, TAB "rc = ATmatchTerm(p%d, %s.right", premise->index, premise_location);
             generate_variable_list(stream, premise_free_vars, ", &", ", &", ");" NEWLINE);
             fputs(TAB "if(!rc) return ATfalse;" NEWLINE, stream);
             break;
         case EQUALITY:
             log_debug("generating equality premise: %t == %t", premise->left, premise->right);
-            fprintf(stream, TAB "if(!ATisEqual(p%d, rule.premises[%d].right)) return ATfalse;" NEWLINE, index, index);
+            fprintf(stream, TAB "if(!ATisEqual(p%d, %s.right)) return ATfalse;" NEWLINE, premise->index, premise_location);
             break;
         case INEQUALITY:
             log_debug("generating inequality premise: %t != %t", premise->left, premise->right);
-            fprintf(stream, TAB "if(ATisEqual(p%d, rule.premises[%d].right)) return ATfalse;" NEWLINE, index, index);
+            fprintf(stream, TAB "if(ATisEqual(p%d, %s.right)) return ATfalse;" NEWLINE, premise->index, premise_location);
             break;
     }
 

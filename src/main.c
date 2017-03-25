@@ -5,35 +5,9 @@
 #include "types.h"
 #include "generate.h"
 #include "logging.h"
+#include "parsing.h"
 
-extern Specification *dynsem_parse(FILE *fd);
-
-RuleTable *convert(List_T spec) {
-    int num_rules = List_length(spec);
-    RuleTable *rules = malloc(sizeof (RuleTable) + num_rules * sizeof (Rule));
-    rules->length = num_rules;
-
-    for (int i = 0; spec; spec = spec->rest, i++) {
-        Rule rule = *(Rule *) spec->first;
-
-        rule.premises_length = List_length(rule.premise_list);
-        rule.premises = NULL;
-        if (rule.premises_length > 0) {
-            rule.premises = malloc(rule.premises_length * sizeof (Premise));
-            List_T old_premises = rule.premise_list;
-            for (int i = 0; old_premises; old_premises = old_premises->rest, i++) {
-                Premise premise = *(Premise *) old_premises->first;
-                rule.premises[i] = premise;
-            }
-        }
-        
-        rules->rules[i] = rule;
-    }
-    
-    return rules;
-}
-
-RuleTable *parse(int argc, char** argv) {
+Specification *parse(int argc, char** argv) {
     if (argc < 2) {
         printf("Usage: dynsem-llvm spec.ds\n");
         exit(EXIT_FAILURE);
@@ -42,30 +16,26 @@ RuleTable *parse(int argc, char** argv) {
     FILE* fd = fopen(argv[1], "r");
     Specification *spec = dynsem_parse(fd);
     fclose(fd);
-    log_info("Found %d rules", List_length(spec));
 
-    return convert(spec->rules);
-}
-
-RuleTable *add_native(RuleTable *rules){
-    return rules;
+    return spec;
 }
 
 int main(int argc, char** argv) {
     ATerm bottom_of_stack;
     ATinit(argc, argv, &bottom_of_stack);
 
-    RuleTable *rules = parse(argc, argv);
-    rules = add_native(rules);
+    Specification *spec = parse(argc, argv);
 
     FILE* fd = fopen("generated/transform.c", "w");
+    assign_indices(spec);
     generate_headers(fd);
-    generate_rule_table(fd, rules);
-    generate_transform_functions(fd, rules);
-    generate_find_function(fd, rules);
+    generate_rule_table(fd, spec);
+    generate_native_functions(fd, spec);
+    generate_rule_functions(fd, spec);
+    generate_match_function(fd, spec);
     fclose(fd);
 
-    free(rules);
+    free(spec);
     return EXIT_SUCCESS;
 }
 

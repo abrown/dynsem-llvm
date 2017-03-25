@@ -1,5 +1,4 @@
 rules
-    a(y, x) --> b(x)
-    where a == b;.
+    a(y, x) --> b(x).
     b(x) --> c(x, 0, 43).
     c(x, y, z) --> z.

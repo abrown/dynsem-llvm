@@ -10,14 +10,14 @@ typedef struct premise_t {
     PremiseType type;
     ATerm left;
     ATerm right;
+    int index; // used to identify the index of this premise in a generated table; -1 until generated, thereon >= 0
 } Premise;
 
 typedef struct rule_t {
     ATerm from;
     ATerm to;
-    List_T premise_list; // unused in interpreter
-    int premises_length;
-    Premise *premises;
+    List_T premises; // unused in interpreter
+    int index; // used to identify the index of this rule in a generated table; -1 until generated, thereon >= 0
 } Rule;
 
 typedef struct native_t {

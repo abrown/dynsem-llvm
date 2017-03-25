@@ -5,6 +5,7 @@
 #include <string.h>
 #include <cii/list.h>
 #include "types.h"
+#include "allocation.h"
 #include "logging.h"
 
 // generated in dynsem.l
@@ -13,62 +14,11 @@ extern int yyparse();
 extern FILE* yyin;
 void yyerror(const char* s);
 
+// helper for string concatenation
+char *concat(int num_strings, ...);
+
+// the final specification is saved here
 static Specification *spec = NULL;
-
-Rule *rule_allocate(char *from, char *to, List_T premises){
-    log_info("allocating rule: %s --> %s (%d premises)", from, to, List_length(premises));
-
-    Rule *rule = malloc(sizeof(Rule));
-    rule->from = ATmake(from);
-    rule->to = ATmake(to);
-    rule->premise_list = premises;
-    rule->premises_length = 0;
-    rule->premises = NULL;
-    return rule;
-}
-
-Native *native_allocate(char *name, char *code) {
-    log_info("allocating native operator: %s", name);
-    Native *native = malloc(sizeof(Native));
-    native->name = name;
-    native->code = code;
-    return native;
-}
-
-Premise *premise_allocate(char *left, char *right, PremiseType type){
-    char *ts;
-    if(type == EQUALITY) ts = "==";
-    else if(type == INEQUALITY) ts = "!=";
-    else if(type == REDUCTION) ts = "=>";
-    else ts = "?";
-    log_info("allocating premise: %s %s %s", left, ts, right);
-
-    Premise *premise = malloc(sizeof(Premise));
-    premise->left = ATmake(left);
-    premise->right = ATmake(right);
-    premise->type = type;
-    return premise;
-}
-
-char *concat(int num_strings, ...) {
-    int size = 0;
-    char *strings[num_strings];
-
-    va_list vl;
-    va_start(vl, num_strings);
-    for (int i = 0; i < num_strings; i++) {
-        strings[i] = va_arg(vl, char*);
-        size += strlen(strings[i]);
-    }
-    va_end(vl);
-
-    char *buffer = malloc(size + 1);
-    buffer[size] = 0;
-    for (int j = 0; j < num_strings; j++) {
-        strcat(buffer, strings[j]);
-    }
-    return buffer;
-}
 
 %}
 
@@ -102,7 +52,7 @@ char *concat(int num_strings, ...) {
 
 %%
 
-specifications: %empty {} | specifications specification {};
+specifications: %empty | specifications specification;
 specification: RULES rules { spec->rules = List_append(spec->rules, $2); } 
     | NATIVE natives { spec->natives = List_append(spec->natives, $2); };
 
@@ -134,13 +84,15 @@ term_number: NUMBER;
 
 %%
 
-
 Specification *dynsem_parse(FILE *fd){
     log_info("beginning parse: fd == %d", fd);
+
+    // setup specification
     spec = malloc(sizeof(Specification));
     spec->rules = NULL;
     spec->natives = NULL;
 
+    // parse
     yyin = fd;
     do { 
         yyparse();
@@ -153,4 +105,24 @@ Specification *dynsem_parse(FILE *fd){
 void yyerror(const char* s) {
     fprintf(stderr, "Parse error: %s\n", s);
     exit(1);
+}
+
+char *concat(int num_strings, ...) {
+    int size = 0;
+    char *strings[num_strings];
+
+    va_list vl;
+    va_start(vl, num_strings);
+    for (int i = 0; i < num_strings; i++) {
+        strings[i] = va_arg(vl, char*);
+        size += strlen(strings[i]);
+    }
+    va_end(vl);
+
+    char *buffer = malloc(size + 1);
+    buffer[size] = 0;
+    for (int j = 0; j < num_strings; j++) {
+        strcat(buffer, strings[j]);
+    }
+    return buffer;
 }
