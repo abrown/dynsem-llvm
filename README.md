@@ -32,14 +32,22 @@ is not production code--it is very much an experiment.__
     ```
     git clone https://github.com/drh/cii
     cd cii
-    make -k THREADS=
+    make -k THREADS=  # if necessary, modify makefile CFLAGS to include -m32
     sudo ln -s ./include /usr/local/include/cii
     sudo ln -s ./libcii.a /usr/local/lib/libcii.a
     ```
 
-5. Build the generator with `make` (test with `make test`; note that this 
-project uses Netbeans-generated Makefiles and unit tests so they may hard to 
-read).
+5. Build the generator with:
+
+    ```
+    apt install bison flex clang
+    git clone https://github.com/abrown/dynsem-llvm
+    make  # use CFLAGS=-m32 if necessary
+    ```
+    
+    Notes: test with `make test`; this project uses Netbeans-generated Makefiles and 
+unit tests so they may hard to read).
+
 6. Generate the interpreter code using the generator and a specification file 
 (see `specs` directory): `dist/Debug/[OS]/dynsem-llvm [spec-file.ds]`. This will
 generate code in the `generated` directory that you can build with 
