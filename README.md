@@ -11,6 +11,7 @@ is not production code--it is very much an experiment.__
 2. Install the `meta-env` tool (necessary to build the aterms library):
 
     ```
+    apt install autoconf make
     git clone https://github.com/cwi-swat/meta-environment
     cd meta-environment/meta-build-env/
     ./reconf
@@ -19,10 +20,11 @@ is not production code--it is very much an experiment.__
 3. Install the `aterms` library:
 
     ```
+    apt install build-essential libtool
     git clone https://github.com/cwi-swat/aterms
     cd aterms/aterm
     ./reconf
-    ./configure && make && make install
+    ./configure && make && make install   # use CFLAGS=-m32 on a 64-bit system to avoid errors
     ```
 
 4. Install the `cii` library (Ubuntu-specific):
